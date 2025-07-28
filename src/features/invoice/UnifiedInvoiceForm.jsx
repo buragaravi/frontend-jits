@@ -4,7 +4,7 @@ import { FiUpload, FiX, FiPlus, FiSave, FiFile, FiTrash2, FiDownload, FiRefreshC
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 
-const API_BASE = 'https://backend-pharmacy-5541.onrender.com/api';
+const API_BASE = 'https://backend-jits.onrender.com/api';
 
 const UnifiedInvoiceForm = () => {
   // Category state

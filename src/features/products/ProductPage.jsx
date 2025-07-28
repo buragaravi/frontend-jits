@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 
-const BASE_URL = 'https://backend-pharmacy-5541.onrender.com/api/products';
+const BASE_URL = 'https://backend-jits.onrender.com/api/products';
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);

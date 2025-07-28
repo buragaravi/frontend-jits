@@ -33,7 +33,7 @@ const StockCheckPage = () => {
     if (!labId || labId === 'central-lab') {
       // Fetch all labs LAB01-LAB08
       Promise.all(labOptions.filter(l => l.value).map(lab =>
-        axios.get(`https://backend-pharmacy-5541.onrender.com/api/equipment/stock?labId=${lab.value}`, {
+        axios.get(`https://backend-jits.onrender.com/api/equipment/stock?labId=${lab.value}`, {
           headers: { Authorization: `Bearer ${token}` },
         }).then(res => res.data)
       ))
@@ -52,7 +52,7 @@ const StockCheckPage = () => {
         })
         .catch(() => setError('Failed to load equipment for all labs'));
     } else {
-      axios.get(`https://backend-pharmacy-5541.onrender.com/api/equipment/stock?labId=${labId}`, {
+      axios.get(`https://backend-jits.onrender.com/api/equipment/stock?labId=${labId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => setEquipment(res.data))
@@ -154,7 +154,7 @@ const StockCheckPage = () => {
         items,
         // summary is not required, backend will compute
       };
-      await axios.post('https://backend-pharmacy-5541.onrender.com/api/equipment/stock-check/report', report, {
+      await axios.post('https://backend-jits.onrender.com/api/equipment/stock-check/report', report, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReportSaved(true);

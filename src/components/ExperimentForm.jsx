@@ -52,7 +52,7 @@ const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8,9,10];
 const token = localStorage.getItem('token');
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: 'https://backend-pharmacy-5541.onrender.com/api',
+  baseURL: 'https://backend-jits.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
@@ -180,7 +180,7 @@ const ExperimentForm = ({ experiment, onClose }) => {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       const token = localStorage.getItem('token');
-      const response = await api.post('https://backend-pharmacy-5541.onrender.com/api/experiments', data, {
+      const response = await api.post('https://backend-jits.onrender.com/api/experiments', data, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -208,7 +208,7 @@ const ExperimentForm = ({ experiment, onClose }) => {
   const updateMutation = useMutation({
     mutationFn: async (data) => {
       const token = localStorage.getItem('token');
-      const response = await api.put(`https://backend-pharmacy-5541.onrender.com/api/experiments/${experiment._id}`, data, {
+      const response = await api.put(`https://backend-jits.onrender.com/api/experiments/${experiment._id}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

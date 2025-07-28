@@ -35,7 +35,7 @@ const ChemicalsPage = () => {
       let url = '';
 
       if (userRole === 'lab_assistant') {
-        url = `https://backend-pharmacy-5541.onrender.com/api/chemicals/stock/${userLabId}`;
+        url = `https://backend-jits.onrender.com/api/chemicals/stock/${userLabId}`;
         const response = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -43,8 +43,8 @@ const ChemicalsPage = () => {
       } else {
         url =
           viewMode === 'central'
-            ? 'https://backend-pharmacy-5541.onrender.com/api/chemicals'
-            : 'https://backend-pharmacy-5541.onrender.com/api/chemicals/labs';
+            ? 'https://backend-jits.onrender.com/api/chemicals'
+            : 'https://backend-jits.onrender.com/api/chemicals/labs';
         const response = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });

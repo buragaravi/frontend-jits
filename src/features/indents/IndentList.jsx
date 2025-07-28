@@ -19,12 +19,12 @@ const IndentList = ({ userRole, userId, labId, refreshTrigger }) => {
       if (statusFilter !== 'all') params.status = statusFilter;
       if (searchTerm) params.search = searchTerm;
       if (userRole === 'lab_assistant') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/indents/lab';
+        endpoint = 'https://backend-jits.onrender.com/api/indents/lab';
         if (labId) params.labId = labId;
       } else if (userRole === 'central_lab_admin') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/indents/central';
+        endpoint = 'https://backend-jits.onrender.com/api/indents/central';
       } else if (userRole === 'admin') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/indents/admin';
+        endpoint = 'https://backend-jits.onrender.com/api/indents/admin';
       }
       const token = localStorage.getItem('token');
       const res = await axios.get(endpoint, {

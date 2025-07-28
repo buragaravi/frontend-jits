@@ -80,7 +80,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
 
     const fetchDraftQuotations = async () => {
         try {
-            const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/quotations/central', {
+            const res = await axios.get('https://backend-jits.onrender.com/api/quotations/central', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { status: 'draft' }
             });
@@ -95,7 +95,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
         setIsLoading(true);
         try {
             await axios.patch(
-                'https://backend-pharmacy-5541.onrender.com/api/quotations/central/draft/submit',
+                'https://backend-jits.onrender.com/api/quotations/central/draft/submit',
                 { quotationId: quotation._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -129,7 +129,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
             }
 
             await axios.patch(
-                `https://backend-pharmacy-5541.onrender.com${endpoint}`,
+                `https://backend-jits.onrender.com${endpoint}`,
                 requestData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -157,7 +157,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
             };
             // For admin, send all chemical remarks as chemicalUpdates
             if (userRole === 'admin') {
-                endpoint = `https://backend-pharmacy-5541.onrender.com/api/quotations/admin/process`;
+                endpoint = `https://backend-jits.onrender.com/api/quotations/admin/process`;
                 payload.quotationId = quotation._id;
                 payload.status = statusUpdate;
                 payload.comments = comment;
@@ -167,7 +167,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
                     remarks: chemicalRemarks[idx] || ''
                 }));
             } else if (userRole === 'central_lab_admin' && quotation.createdByRole === 'lab_assistant') {
-                endpoint = `https://backend-pharmacy-5541.onrender.com/api/quotations/central/allocate`;
+                endpoint = `https://backend-jits.onrender.com/api/quotations/central/allocate`;
                 payload.quotationId = quotation._id;
                 payload.status = statusUpdate;
                 payload.comments = comment;
@@ -197,7 +197,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
             const remark = chemicalRemarks[index];
             if (userRole === 'admin') {
                 await axios.patch(
-                    `https://backend-pharmacy-5541.onrender.com/api/quotations/admin/process`,
+                    `https://backend-jits.onrender.com/api/quotations/admin/process`,
                     {
                         quotationId: quotation._id,
                         status: quotation.status,
@@ -207,7 +207,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
                 );
             } else {
                 await axios.patch(
-                    `https://backend-pharmacy-5541.onrender.com/api/quotations/${quotation._id}/chemicals/remarks`,
+                    `https://backend-jits.onrender.com/api/quotations/${quotation._id}/chemicals/remarks`,
                     {
                         chemicalUpdates: [{ index, remarks: remark }]
                     },
@@ -234,7 +234,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
         setIsLoading(true);
         try {
             await axios.patch(
-                `https://backend-pharmacy-5541.onrender.com/api/quotations/${quotation._id}/chemicals/batch-remarks`,
+                `https://backend-jits.onrender.com/api/quotations/${quotation._id}/chemicals/batch-remarks`,
                 { standardRemark },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

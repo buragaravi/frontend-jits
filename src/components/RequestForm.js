@@ -44,7 +44,7 @@ const RequestForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://backend-pharmacy-5541.onrender.com/api/requests', {
+      const response = await axios.post('https://backend-jits.onrender.com/api/requests', {
         labId,
         experiments: selectedExperiments,
       });

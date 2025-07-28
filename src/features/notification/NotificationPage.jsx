@@ -12,7 +12,7 @@ const NotificationPage = () => {
     setLoading(true);
     setFetchError(null);
     try {
-      const res = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/notifications/user`, {
+      const res = await axios.get(`https://backend-jits.onrender.com/api/notifications/user`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -30,7 +30,7 @@ const NotificationPage = () => {
 
   const markAsRead = async (notificationId) => {
     try {
-      await axios.post(`https://backend-pharmacy-5541.onrender.com/api/notifications/mark-read/${notificationId}`, {}, {
+      await axios.post(`https://backend-jits.onrender.com/api/notifications/mark-read/${notificationId}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }

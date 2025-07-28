@@ -16,7 +16,7 @@ const CreateEquipmentRequestForm = () => {
   const createRequestMutation = useMutation({
     mutationFn: async (requestData) => {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://backend-pharmacy-5541.onrender.com/api/equipment/requests', requestData, {
+      const response = await axios.post('https://backend-jits.onrender.com/api/equipment/requests', requestData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response.data;
@@ -40,7 +40,7 @@ const CreateEquipmentRequestForm = () => {
     });
     if (!searchTerm.trim()) return;
     try {
-      const response = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/equipment/central/available?search=${searchTerm}`, {
+      const response = await axios.get(`https://backend-jits.onrender.com/api/equipment/central/available?search=${searchTerm}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const suggestions = response.data.map(item => ({

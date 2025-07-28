@@ -27,7 +27,7 @@ const AnimationStyles = () => (
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: 'https://backend-pharmacy-5541.onrender.com/api',
+  baseURL: 'https://backend-jits.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },

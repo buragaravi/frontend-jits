@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://backend-pharmacy-5541.onrender.com/api';
+const BASE_URL = 'https://backend-jits.onrender.com/api';
 
 export const register = async (userData) => {
   const response = await axios.post(`${BASE_URL}/auth/register`, userData);

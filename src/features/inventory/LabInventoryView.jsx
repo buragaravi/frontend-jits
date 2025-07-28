@@ -43,7 +43,7 @@ const LabInventoryView = ({ labId }) => {
   const fetchLabInventory = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/inventory/lab/${labId}?page=${page}&name=${search}`);
+      const response = await axios.get(`https://backend-jits.onrender.com/api/inventory/lab/${labId}?page=${page}&name=${search}`);
       setChemicals(response.data.data);
       setPagination({
         currentPage: response.data.currentPage,
@@ -58,7 +58,7 @@ const LabInventoryView = ({ labId }) => {
 
   const fetchLiveStock = async () => {
     try {
-      const response = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/inventory/live/${labId}`);
+      const response = await axios.get(`https://backend-jits.onrender.com/api/inventory/live/${labId}`);
       setLiveStock(response.data);
     } catch (error) {
       console.error('Error fetching live stock:', error);
@@ -67,7 +67,7 @@ const LabInventoryView = ({ labId }) => {
 
   const allocateChemical = async () => {
     try {
-      await axios.post('https://backend-pharmacy-5541.onrender.com/api/inventory/allocate', allocation);
+      await axios.post('https://backend-jits.onrender.com/api/inventory/allocate', allocation);
       setAllocationDialogOpen(false);
       fetchLabInventory();
       fetchLiveStock();

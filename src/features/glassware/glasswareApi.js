@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://backend-pharmacy-5541.onrender.com/api/glassware';
+const BASE_URL = 'https://backend-jits.onrender.com/api/glassware';
 
 export const addGlasswareToCentral = async (items, usePreviousBatchId = false) => {
   const token = localStorage.getItem('token');

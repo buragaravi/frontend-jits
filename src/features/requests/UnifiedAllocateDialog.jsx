@@ -46,7 +46,7 @@ const UnifiedAllocateDialog = ({ request, onClose, onSuccess }) => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://backend-pharmacy-5541.onrender.com/api/requests/${request._id}/allocate-unified`,
+        `https://backend-jits.onrender.com/api/requests/${request._id}/allocate-unified`,
         { chemicals, glassware, equipment },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -54,7 +54,7 @@ const VendorList = () => {
         const controller = new AbortController();
         const signal = controller.signal;
         // Start fetch
-        const response = await fetch(`https://backend-pharmacy-5541.onrender.com/api/vendors?page=${currentPage}&limit=${vendorsPerPage}&search=${searchTerm}`, { signal });
+        const response = await fetch(`https://backend-jits.onrender.com/api/vendors?page=${currentPage}&limit=${vendorsPerPage}&search=${searchTerm}`, { signal });
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           throw new Error('Server did not return JSON. Check backend API URL and server status.');
@@ -86,7 +86,7 @@ const VendorList = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/invoices');
+        const res = await axios.get('https://backend-jits.onrender.com/api/invoices');
         setInvoices(res.data || []);
       } catch (err) {
         // ignore for now
@@ -343,7 +343,7 @@ const VendorList = () => {
   const handleDeleteVendor = async (id) => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
-        const response = await fetch(`https://backend-pharmacy-5541.onrender.com/api/vendors/${id}`, {
+        const response = await fetch(`https://backend-jits.onrender.com/api/vendors/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -362,7 +362,7 @@ const VendorList = () => {
 
   const handleFormSubmit = async (vendorData) => {
     try {
-      const url = editingVendor ? `https://backend-pharmacy-5541.onrender.com/api/vendors/${editingVendor._id}` : 'https://backend-pharmacy-5541.onrender.com/api/vendors';
+      const url = editingVendor ? `https://backend-jits.onrender.com/api/vendors/${editingVendor._id}` : 'https://backend-jits.onrender.com/api/vendors';
       const method = editingVendor ? 'PUT' : 'POST';
       const response = await fetch(url, {
         method,

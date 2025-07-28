@@ -12,7 +12,7 @@ const OutOfStockChemicals = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/out-of-stock', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/out-of-stock', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOutOfStock(res.data || []);

@@ -101,7 +101,7 @@ const AllLabRequestsPage = () => {
       const requestPromises = labList.map(async (labId) => {
         try {
           const response = await axios.get(
-            `https://backend-pharmacy-5541.onrender.com/api/requests/lab/${labId}`,
+            `https://backend-jits.onrender.com/api/requests/lab/${labId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -140,7 +140,7 @@ const AllLabRequestsPage = () => {
 
   const fetchAvailableChemicals = async () => {
     try {
-      const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+      const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAvailableChemicals(res.data);

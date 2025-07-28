@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const categoryEndpoints = {
-  glassware: 'https://backend-pharmacy-5541.onrender.com/api/glassware/central/available',
-  equipment: 'https://backend-pharmacy-5541.onrender.com/api/equipment/central/available',
-  other: 'https://backend-pharmacy-5541.onrender.com/api/others/central/available',
+  glassware: 'https://backend-jits.onrender.com/api/glassware/central/available',
+  equipment: 'https://backend-jits.onrender.com/api/equipment/central/available',
+  other: 'https://backend-jits.onrender.com/api/others/central/available',
 };
 
 function getQrField(item) {

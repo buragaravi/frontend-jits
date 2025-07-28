@@ -40,7 +40,7 @@ const AddChemicalForm = () => {
       const token = localStorage.getItem('token');
 
       await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/chemicals/add',
+        'https://backend-jits.onrender.com/api/chemicals/add',
         {
           ...formData,
           quantity: parseFloat(formData.quantity),

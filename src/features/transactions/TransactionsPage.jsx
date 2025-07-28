@@ -250,9 +250,9 @@ const TransactionsPage = () => {
       let url = '';
 
       if (userRole === 'lab_assistant') {
-        url = `https://backend-pharmacy-5541.onrender.com/api/transactions/lab/${userLabId}`;
+        url = `https://backend-jits.onrender.com/api/transactions/lab/${userLabId}`;
       } else if (userRole === 'admin' || userRole === 'central_lab_admin') {
-        url = `https://backend-pharmacy-5541.onrender.com/api/transactions/all`;
+        url = `https://backend-jits.onrender.com/api/transactions/all`;
       } else {
         setError('Unauthorized access');
         setLoading(false);

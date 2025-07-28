@@ -54,7 +54,7 @@ const AllocateEquipmentForm = () => {
       if (!parsed.itemId) throw new Error('QR code missing itemId');
       setItemId(parsed.itemId);
       // Fetch equipment details by itemId
-      const res = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/equipment/stock?itemId=${parsed.itemId}`, {
+      const res = await axios.get(`https://backend-jits.onrender.com/api/equipment/stock?itemId=${parsed.itemId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEquipmentDetails(res.data && Array.isArray(res.data) ? res.data[0] : res.data);
@@ -79,7 +79,7 @@ const AllocateEquipmentForm = () => {
     setLoading(true);
     try {
       await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/equipment/allocate/scan',
+        'https://backend-jits.onrender.com/api/equipment/allocate/scan',
         { itemId, toLabId: labId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

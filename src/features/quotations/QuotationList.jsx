@@ -25,14 +25,14 @@ const QuotationList = ({ userRole, userId, labId }) => {
       }
 
       if (userRole === 'lab_assistant') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/quotations/lab';
+        endpoint = 'https://backend-jits.onrender.com/api/quotations/lab';
         if (labId) {
           params.labId = labId;
         }
       } else if (userRole === 'central_lab_admin') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/quotations/central';
+        endpoint = 'https://backend-jits.onrender.com/api/quotations/central';
       } else if (userRole === 'admin') {
-        endpoint = 'https://backend-pharmacy-5541.onrender.com/api/quotations/admin';
+        endpoint = 'https://backend-jits.onrender.com/api/quotations/admin';
       }
 
       const token = localStorage.getItem('token');

@@ -92,7 +92,7 @@ const MyRequestsPage = () => {
   const fetchMyRequests = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/requests/faculty', {
+      const res = await axios.get('https://backend-jits.onrender.com/api/requests/faculty', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

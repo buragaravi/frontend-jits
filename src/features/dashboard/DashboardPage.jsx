@@ -7,7 +7,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('https://backend-pharmacy-5541.onrender.com/api/auth/me', {
+        const response = await axios.get('https://backend-jits.onrender.com/api/auth/me', {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },

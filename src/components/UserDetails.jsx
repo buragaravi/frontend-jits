@@ -36,7 +36,7 @@ const UserDetails = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/auth/me', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);

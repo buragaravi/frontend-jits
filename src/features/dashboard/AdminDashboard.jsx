@@ -454,7 +454,7 @@ const AdminDashboard = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/auth/me', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
@@ -477,7 +477,7 @@ const AdminDashboard = () => {
     // Fetch central chemicals
     const fetchCentralChemicals = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const chemicals = Array.isArray(res.data) ? res.data : [];
@@ -510,7 +510,7 @@ const AdminDashboard = () => {
       try {
         const allRequests = [];
         const requests = labList.map(labId =>
-          axios.get(`https://backend-pharmacy-5541.onrender.com/api/requests/lab/${labId}`, {
+          axios.get(`https://backend-jits.onrender.com/api/requests/lab/${labId}`, {
             headers: { Authorization: `Bearer ${token}` },
           }).then(res => {
             if (Array.isArray(res.data)) {

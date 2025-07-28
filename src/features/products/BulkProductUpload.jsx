@@ -282,7 +282,7 @@ const BulkProductUpload = ({ onClose, onSuccess }) => {
         }));
 
         const response = await axios.post(
-          'https://backend-pharmacy-5541.onrender.com/api/products/bulk',
+          'https://backend-jits.onrender.com/api/products/bulk',
           { products: productsForUpload },
           {
             headers: {

@@ -5,7 +5,7 @@ import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import ProductForm from '../products/ProductForm';
 
-const API_BASE = 'https://backend-pharmacy-5541.onrender.com/api';
+const API_BASE = 'https://backend-jits.onrender.com/api';
 
 const InvoiceOtherProductsForm = ({ category, onSuccess }) => {
   // Helper function to get category display name

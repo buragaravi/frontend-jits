@@ -106,7 +106,7 @@ const UnifiedReturnDialog = ({ request, onClose, onSuccess }) => {
       console.log('===========================');
       
       await axios.put(
-        `https://backend-pharmacy-5541.onrender.com/api/requests/${request._id}/return-unified`,
+        `https://backend-jits.onrender.com/api/requests/${request._id}/return-unified`,
         { 
           chemicals: chemicalsWithName, 
           glassware: glasswarePayload, 

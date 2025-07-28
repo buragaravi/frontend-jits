@@ -26,7 +26,7 @@ const LabRequests = () => {
     queryKey: ['labRequests'],
     queryFn: async () => {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://backend-pharmacy-5541.onrender.com/api/requests/lab', {
+      const response = await axios.get('https://backend-jits.onrender.com/api/requests/lab', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ const LabRequests = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
-        `https://backend-pharmacy-5541.onrender.com/api/requests/${requestId}/status`,
+        `https://backend-jits.onrender.com/api/requests/${requestId}/status`,
         { status },
         {
           headers: {

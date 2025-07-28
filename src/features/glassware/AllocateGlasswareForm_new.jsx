@@ -23,7 +23,7 @@ const AllocateGlasswareForm = () => {
   useEffect(() => {
     const fetchAvailableGlasswares = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/glassware/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/glassware/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAvailableGlasswares(res.data.filter((g) => g.quantity > 0));
@@ -83,7 +83,7 @@ const AllocateGlasswareForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/glassware/allocate/lab',
+        'https://backend-jits.onrender.com/api/glassware/allocate/lab',
         { labId, allocations },
         { headers: { Authorization: `Bearer ${token}` } }
       );

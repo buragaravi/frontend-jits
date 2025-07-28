@@ -39,7 +39,7 @@ const FulfillRemainingRequestDialog = ({
     setLoading(true);
     try {
       const response = await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/requests/fulfill-remaining',
+        'https://backend-jits.onrender.com/api/requests/fulfill-remaining',
         {
           requestId: request._id,
           quantities
@@ -64,7 +64,7 @@ const FulfillRemainingRequestDialog = ({
     setLoading(true);
     try {
       await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/requests/fulfill-remaining',
+        'https://backend-jits.onrender.com/api/requests/fulfill-remaining',
         {
           requestId: request._id,
           quantities,

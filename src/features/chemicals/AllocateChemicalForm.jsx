@@ -70,7 +70,7 @@ const AllocateChemicalForm = () => {
   useEffect(() => {
     const fetchAvailableChemicals = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -152,7 +152,7 @@ const AllocateChemicalForm = () => {
 
     try {
       const res = await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/chemicals/allocate',
+        'https://backend-jits.onrender.com/api/chemicals/allocate',
         { labId, allocations },
         { headers: { Authorization: `Bearer ${token}` } }
       );

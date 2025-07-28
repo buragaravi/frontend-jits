@@ -82,7 +82,7 @@ const CommentSection = ({ quotationId, comments: propComments, createdByRole, st
       setFetching(true);
       setError('');
       try {
-        const res = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/quotations/${quotationId}`);
+        const res = await axios.get(`https://backend-jits.onrender.com/api/quotations/${quotationId}`);
         setComments(extractComments(res.data));
       } catch (err) {
         setComments([]);
@@ -108,7 +108,7 @@ const CommentSection = ({ quotationId, comments: propComments, createdByRole, st
     setError('');
     try {
       await axios.post(
-        `https://backend-pharmacy-5541.onrender.com/api/quotations/${quotationId}/comments`,
+        `https://backend-jits.onrender.com/api/quotations/${quotationId}/comments`,
         { text: newComment.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );

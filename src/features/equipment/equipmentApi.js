@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://backend-pharmacy-5541.onrender.com/api/equipment';
+const BASE_URL = 'https://backend-jits.onrender.com/api/equipment';
 
 export const addEquipmentToCentral = async (items, usePreviousBatchId = false) => {
   const token = localStorage.getItem('token');

@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import ProductForm from '../products/ProductForm';
 import Swal from 'sweetalert2';
 
-const API_BASE = 'https://backend-pharmacy-5541.onrender.com/api';
+const API_BASE = 'https://backend-jits.onrender.com/api';
 
 const InvoiceForm = () => {
     // ==================== STATE MANAGEMENT ====================
@@ -550,7 +550,7 @@ const InvoiceForm = () => {
         setProductFormLoading(true);
         setProductFormError('');
         try {
-            const res = await axios.post('https://backend-pharmacy-5541.onrender.com/api/products', productData);
+            const res = await axios.post('https://backend-jits.onrender.com/api/products', productData);
             setProducts(prev => [res.data.data, ...prev]);
             // Move to next unregistered product or close modal
             if (productFormIndex < unregisteredProducts.length - 1) {

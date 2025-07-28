@@ -189,12 +189,12 @@ const LabChemicalTable = ({ labId }) => {
     setLoading(true);
     setError(null);
     try {
-      const stockRes = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/chemicals/live/${labId}`, {
+      const stockRes = await axios.get(`https://backend-jits.onrender.com/api/chemicals/live/${labId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLiveStock(stockRes.data);
 
-      const transactionsRes = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/transactions/lab/${labId}`, {
+      const transactionsRes = await axios.get(`https://backend-jits.onrender.com/api/transactions/lab/${labId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransactions(transactionsRes.data);
@@ -356,7 +356,7 @@ const LabChemicalTable = ({ labId }) => {
   const [requestData, setRequestData] = useState([]);
   useEffect(() => {
     if (!labId) return;
-    axios.get(`https://backend-pharmacy-5541.onrender.com/api/requests/lab/${labId}`, {
+    axios.get(`https://backend-jits.onrender.com/api/requests/lab/${labId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => setRequestData(res.data || []))

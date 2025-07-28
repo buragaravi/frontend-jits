@@ -50,7 +50,7 @@ const customStyles = `
   }
 `;
 
-const BASE_URL = 'https://backend-pharmacy-5541.onrender.com/api/products';
+const BASE_URL = 'https://backend-jits.onrender.com/api/products';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);

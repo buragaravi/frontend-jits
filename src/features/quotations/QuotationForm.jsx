@@ -43,7 +43,7 @@ const QuotationForm = ({ userRole, userId, labId }) => {
   useEffect(() => {
     const fetchAvailableChemicals = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -220,7 +220,7 @@ const QuotationForm = ({ userRole, userId, labId }) => {
         ? '/api/quotations/lab' 
         : '/api/quotations/central/draft';
 
-      await axios.post(`https://backend-pharmacy-5541.onrender.com${endpoint}`, payload, {
+      await axios.post(`https://backend-jits.onrender.com${endpoint}`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

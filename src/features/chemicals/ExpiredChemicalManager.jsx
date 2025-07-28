@@ -18,7 +18,7 @@ const ExpiredChemicalManager = () => {
     const fetchCentralLive = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCentralLiveChemicals(res.data || []);
@@ -34,7 +34,7 @@ const ExpiredChemicalManager = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/expired', {
+      const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/expired', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setExpiredChemicals(res.data || []);
@@ -95,7 +95,7 @@ const ExpiredChemicalManager = () => {
       }
       // Debug: log payload
       // console.log('Submitting payload:', payload);
-      await axios.post('https://backend-pharmacy-5541.onrender.com/api/chemicals/expired/action', payload, {
+      await axios.post('https://backend-jits.onrender.com/api/chemicals/expired/action', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccessMsg('Action completed successfully.');

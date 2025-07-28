@@ -177,9 +177,9 @@ const UniversalQRScanner = () => {
     try {
       const category = getCategoryFromQR(qrData);
       const endpoints = {
-        glassware: 'https://backend-pharmacy-5541.onrender.com/api/glassware/scan',
-        equipment: 'https://backend-pharmacy-5541.onrender.com/api/equipment/scan',
-        other: 'https://backend-pharmacy-5541.onrender.com/api/other/scan'
+        glassware: 'https://backend-jits.onrender.com/api/glassware/scan',
+        equipment: 'https://backend-jits.onrender.com/api/equipment/scan',
+        other: 'https://backend-jits.onrender.com/api/other/scan'
       };
 
       const endpoint = endpoints[category] || endpoints.other;

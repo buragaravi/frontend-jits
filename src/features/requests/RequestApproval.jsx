@@ -35,7 +35,7 @@ const RequestApprovalPage = () => {
   const fetchLabRequests = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://backend-pharmacy-5541.onrender.com/api/requests/lab/${labId}`, {
+      const res = await axios.get(`https://backend-jits.onrender.com/api/requests/lab/${labId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,7 +51,7 @@ const RequestApprovalPage = () => {
   // Fetch available central chemicals
   const fetchAvailableChemicals = async () => {
     try {
-      const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/chemicals/central/available', {
+      const res = await axios.get('https://backend-jits.onrender.com/api/chemicals/central/available', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

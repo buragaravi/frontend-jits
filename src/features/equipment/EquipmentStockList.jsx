@@ -284,7 +284,7 @@ const EquipmentStockList = () => {
       setLoading(true);
       setError('');
       try {
-        const response = await axios.get('https://backend-pharmacy-5541.onrender.com/api/equipment/central/available', {
+        const response = await axios.get('https://backend-jits.onrender.com/api/equipment/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
         

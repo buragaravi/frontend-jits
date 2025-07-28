@@ -14,7 +14,7 @@ const LoginPage = () => {
         setError('');
         
         try {
-            const response = await axios.post('https://backend-pharmacy-5541.onrender.com/api/auth/login', {
+            const response = await axios.post('https://backend-jits.onrender.com/api/auth/login', {
                 email,
                 password,
             });

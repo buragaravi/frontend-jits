@@ -50,7 +50,7 @@ const EquipmentDetailPage = () => {
       try {
         const token = localStorage.getItem('token');
         const res = await axios.get(
-          `https://backend-pharmacy-5541.onrender.com/api/equipment/item/${itemId}/full-trace`,
+          `https://backend-jits.onrender.com/api/equipment/item/${itemId}/full-trace`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }

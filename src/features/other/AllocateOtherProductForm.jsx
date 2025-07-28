@@ -23,7 +23,7 @@ const AllocateOtherProductForm = () => {
   useEffect(() => {
     const fetchAvailableProducts = async () => {
       try {
-        const res = await axios.get('https://backend-pharmacy-5541.onrender.com/api/other/central/available', {
+        const res = await axios.get('https://backend-jits.onrender.com/api/other/central/available', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAvailableProducts(res.data.filter((p) => p.quantity > 0));
@@ -79,7 +79,7 @@ const AllocateOtherProductForm = () => {
     setLoading(true);
     try {
       await axios.post(
-        'https://backend-pharmacy-5541.onrender.com/api/other/allocate',
+        'https://backend-jits.onrender.com/api/other/allocate',
         { labId, allocations },
         { headers: { Authorization: `Bearer ${token}` } }
       );

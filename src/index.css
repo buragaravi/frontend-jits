@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* 🌐 Import Browser Compatibility Styles */
+@import "./styles/browser-compatibility.css";
 
 /* Custom Scrollbar Styles - Global Application */
 

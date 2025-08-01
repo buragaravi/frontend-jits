@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { applyCompatibilityFixes } from './utils/browserCompatibility';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -47,10 +48,15 @@ import { AllocateEquipmentToLabByScanForm } from './features/equipment';
 const queryClient = new QueryClient();
 
 const App = () => {
+  // 🌐 Apply browser compatibility fixes on app load
+  useEffect(() => {
+    applyCompatibilityFixes();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-gradient-to-b from-[#F8F4F6] to-[#F0E6EE]">
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
           <OfflineIndicator />
           <Routes>
             {/* Public Routes */}

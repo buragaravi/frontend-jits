@@ -23,6 +23,7 @@ import EquipmentStockList from  '../equipment/EquipmentStockList';
 import RequestCard from '../requests/RequestCard';
 import UnifiedAllocateDialog from '../requests/UnifiedAllocateDialog';
 import CourseList from '../courses/CourseList';
+import LabManagement from '../labs/LabManagement';
 
 // SVG Icons - Converted to Component Functions for consistency with CentralLabAdminDashboard
 const ChemicalIcon = () => (
@@ -104,6 +105,12 @@ const UserIcon = () => (
   </svg>
 );
 
+const LabManagementIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+  </svg>
+);
+
 const CourseIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -179,6 +186,7 @@ const NAV_CATEGORIES = {
     icon: AdministrationIcon,
     items: [
       { key: 'courses', label: 'Course & Batch Management', icon: CourseIcon, component: <CourseList /> },
+      { key: 'labs', label: 'Lab Management', icon: LabManagementIcon, component: <LabManagement /> },
       { key: 'invoices', label: 'Invoices', icon: InvoiceIcon, component: <InvoicePage /> },
       { key: 'vendors', label: 'Vendors', icon: VendorIcon, component: <VendorList /> },
       { key: 'users', label: 'User Management', icon: UserIcon, component: <UserManagement /> }
@@ -188,8 +196,6 @@ const NAV_CATEGORIES = {
 
 // Flatten NAV_ITEMS for backward compatibility
 const NAV_ITEMS = Object.values(NAV_CATEGORIES).flatMap(category => category.items);
-
-const labList = ['LAB01', 'LAB02', 'LAB03', 'LAB04', 'LAB05', 'LAB06', 'LAB07', 'LAB08'];
 
 // // Quick Stats Component
 // const QuickStats = ({ productStats, requestStats, pendingRequests }) => {
@@ -462,6 +468,9 @@ const AdminDashboard = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showFulfillDialog, setShowFulfillDialog] = useState(false);
   const [userRole, setUserRole] = useState('');
+  
+  // Dynamic lab list will be fetched from API
+  const [labList, setLabList] = useState([]);
 
   const token = localStorage.getItem('token');
 
@@ -537,6 +546,25 @@ const AdminDashboard = () => {
       return;
     }
 
+    // Fetch dynamic labs first
+    const fetchLabs = async () => {
+      try {
+        const response = await axios.get('https://backend-jits.onrender.com/api/labs?includeInactive=false', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const labs = response.data?.data || [];
+        const activeLabIds = labs.map(lab => lab.labId);
+        setLabList(activeLabIds);
+        return activeLabIds;
+      } catch (error) {
+        console.error('Error fetching labs:', error);
+        // Fallback to just central-store if API fails
+        const fallbackLabs = ['central-store'];
+        setLabList(fallbackLabs);
+        return fallbackLabs;
+      }
+    };
+
     // Fetch central chemicals
     const fetchCentralChemicals = async () => {
       try {
@@ -568,11 +596,11 @@ const AdminDashboard = () => {
       }
     };
 
-    // Fetch all lab requests (improved, parallel)
-    const fetchAllLabRequests = async () => {
+    // Fetch all lab requests (improved, parallel) - now uses dynamic lab list
+    const fetchAllLabRequests = async (currentLabList) => {
       try {
         const allRequests = [];
-        const requests = labList.map(labId =>
+        const requests = currentLabList.map(labId =>
           axios.get(`https://backend-jits.onrender.com/api/requests/lab/${labId}`, {
             headers: { Authorization: `Bearer ${token}` },
           }).then(res => {
@@ -592,8 +620,16 @@ const AdminDashboard = () => {
       }
     };
 
-    fetchCentralChemicals();
-    fetchAllLabRequests();
+    // Initialize data fetching with proper sequencing
+    const initializeData = async () => {
+      const currentLabList = await fetchLabs();
+      await Promise.all([
+        fetchCentralChemicals(),
+        fetchAllLabRequests(currentLabList)
+      ]);
+    };
+
+    initializeData();
   }, [navigate]);
 
   const handleLogout = () => {

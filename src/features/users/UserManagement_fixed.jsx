@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -97,6 +97,35 @@ const UserManagement = () => {
     role: '',
     labId: '',
   });
+  
+  // Dynamic labs state
+  const [availableLabs, setAvailableLabs] = useState([]);
+  const [labsLoading, setLabsLoading] = useState(true);
+
+  // Fetch available labs
+  useEffect(() => {
+    const fetchLabs = async () => {
+      try {
+        setLabsLoading(true);
+        const response = await api.get('/labs?includeInactive=false');
+        const labs = response.data?.data || [];
+        setAvailableLabs(labs);
+      } catch (error) {
+        console.error('Error fetching labs:', error);
+        // Fallback to central-store if API fails
+        setAvailableLabs([{ 
+          labId: 'central-store', 
+          labName: 'Central Store', 
+          isSystem: true, 
+          isActive: true 
+        }]);
+      } finally {
+        setLabsLoading(false);
+      }
+    };
+
+    fetchLabs();
+  }, []);
 
   // Add user mutation
   const addUserMutation = useMutation({
@@ -535,8 +564,10 @@ const UserManagement = () => {
                         required
                       >
                         <option value="">Select lab</option>
-                        {['LAB01', 'LAB02', 'LAB03', 'LAB04', 'LAB05', 'LAB06', 'LAB07', 'LAB08'].map((lab) => (
-                          <option key={lab} value={lab}>{lab}</option>
+                        {availableLabs.map((lab) => (
+                          <option key={lab.labId} value={lab.labId}>
+                            {lab.labName} ({lab.labId})
+                          </option>
                         ))}
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">

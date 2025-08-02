@@ -168,6 +168,10 @@ const TransactionsPage = () => {
   const transactionsPerPage = 20;
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE());
   const [globalFilterApplied, setGlobalFilterApplied] = useState(false);
+  
+  // Dynamic labs state
+  const [labs, setLabs] = useState([]);
+  const [labsLoading, setLabsLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [toast, setToast] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -232,13 +236,56 @@ const TransactionsPage = () => {
 
       setRole(user.role);
       setLabId(user.labId);
-      fetchTransactions(user.role, user.labId);
+      
+      // Fetch labs and transactions in parallel
+      Promise.all([
+        fetchLabs(),
+        fetchTransactions(user.role, user.labId)
+      ]);
     } catch (err) {
       console.error(err);
       setError('Invalid token');
       setLoading(false);
     }
   }, []);
+
+  // Fetch dynamic labs
+  const fetchLabs = async () => {
+    try {
+      setLabsLoading(true);
+      const response = await axios.get('https://backend-jits.onrender.com/api/labs?includeInactive=false', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const labsData = response.data?.data || [];
+      setLabs(labsData);
+      return labsData;
+    } catch (error) {
+      console.error('Error fetching labs:', error);
+      // Fallback to central-store if API fails
+      const fallbackLabs = [{ 
+        labId: 'central-store', 
+        labName: 'Central Store', 
+        isSystem: true, 
+        isActive: true 
+      }];
+      setLabs(fallbackLabs);
+      return fallbackLabs;
+    } finally {
+      setLabsLoading(false);
+    }
+  };
+
+  // Helper function to get lab display name
+  const getLabDisplayName = (labId) => {
+    if (!labId) return '-';
+    
+    // Handle central-store specially
+    if (labId === 'central-store') return 'Central Store';
+    
+    // Find lab in dynamic labs list
+    const lab = labs.find(l => l.labId === labId);
+    return lab ? lab.labName : labId;
+  };
 
   const fetchTransactions = async (userRole, userLabId) => {
     setLoading(true);
@@ -923,14 +970,14 @@ const TransactionsPage = () => {
                               </span>
                             </td>
                             <td className="px-4 md:px-6 py-4 text-gray-900">
-                              {tx.fromLabId === 'central-store' ? (
-                                <span className="font-medium text-blue-600">Central Store</span>
-                              ) : tx.fromLabId || '-'}
+                              <span className={`font-medium ${tx.fromLabId === 'central-store' ? 'text-blue-600' : 'text-gray-900'}`}>
+                                {getLabDisplayName(tx.fromLabId)}
+                              </span>
                             </td>
                             <td className="px-4 md:px-6 py-4 text-gray-900">
-                              {tx.toLabId === 'central-store' ? (
-                                <span className="font-medium text-blue-600">Central Store</span>
-                              ) : tx.toLabId || '-'}
+                              <span className={`font-medium ${tx.toLabId === 'central-store' ? 'text-blue-600' : 'text-gray-900'}`}>
+                                {getLabDisplayName(tx.toLabId)}
+                              </span>
                             </td>
                             <td className="px-4 md:px-6 py-4 text-gray-700">{tx.createdBy?.name || 'N/A'}</td>
                             <td className="px-4 md:px-6 py-4 text-gray-700">

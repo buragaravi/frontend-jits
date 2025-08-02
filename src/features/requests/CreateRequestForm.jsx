@@ -64,17 +64,7 @@ const THEME = {
   cardHover: 'hover:bg-gray-50/50 transition-colors duration-200'
 };
 
-// Lab IDs array
-const LAB_IDS = [
-  'LAB01',
-  'LAB02',
-  'LAB03',
-  'LAB04',
-  'LAB05',
-  'LAB06',
-  'LAB07',
-  'LAB08'
-];
+// Dynamic Lab IDs will be fetched from API
 
 // SVG Icons
 const ExperimentIcon = () => (
@@ -101,6 +91,11 @@ const CLOUDY_SUBHEADER = 'text-lg font-bold text-blue-800 mb-4';
 const CreateRequestForm = () => {
   const queryClient = useQueryClient();
   const [labId, setLabId] = useState('');
+  
+  // Dynamic labs state  
+  const [availableLabs, setAvailableLabs] = useState([]);
+  const [labsLoading, setLabsLoading] = useState(true);
+  
   const [experiments, setExperiments] = useState([
     {
       experimentId: '',
@@ -131,12 +126,33 @@ const CreateRequestForm = () => {
   const [equipmentLoading, setEquipmentLoading] = useState(false);
   const [equipmentError, setEquipmentError] = useState('');
 
-  // Fetch and aggregate equipment from all labs
+  // Fetch dynamic labs and aggregate equipment from all labs
   useEffect(() => {
+    const fetchLabs = async () => {
+      try {
+        setLabsLoading(true);
+        const response = await api.get('/labs?includeInactive=false');
+        const labs = response.data?.data || [];
+        setAvailableLabs(labs);
+        return labs.map(lab => lab.labId);
+      } catch (error) {
+        console.error('Error fetching labs:', error);
+        // Fallback to central-store if API fails
+        const fallbackLabs = [{ labId: 'central-store', labName: 'Central Store', isSystem: true, isActive: true }];
+        setAvailableLabs(fallbackLabs);
+        return ['central-store'];
+      } finally {
+        setLabsLoading(false);
+      }
+    };
+
     const fetchEquipment = async () => {
       setEquipmentLoading(true);
       setEquipmentError('');
       try {
+        // First fetch labs to get dynamic lab IDs
+        const labIds = await fetchLabs();
+        
         // Get live equipment data
         console.log('Fetching live equipment data...');
         const liveEquipment = await api.get('/equipment/live');
@@ -146,9 +162,9 @@ const CreateRequestForm = () => {
           count: liveEquipment.data?.length || 0
         });
         
-        // Get stock data from all labs
+        // Get stock data from all labs using dynamic lab IDs
         console.log('Fetching lab-specific stock data...');
-        const labPromises = LAB_IDS.map(labId => {
+        const labPromises = labIds.map(labId => {
           console.log(`Fetching stock for lab ${labId}...`);
           return api.get(`/equipment/stock?labId=${labId}`)
             .then(response => {
@@ -1287,8 +1303,10 @@ const CreateRequestForm = () => {
                 aria-label="Select Lab"
               >
                 <option value="">Select Lab</option>
-                {LAB_IDS.map((id) => (
-                  <option key={id} value={id}>{id}</option>
+                {availableLabs.map((lab) => (
+                  <option key={lab.labId} value={lab.labId}>
+                    {lab.labName} ({lab.labId})
+                  </option>
                 ))}
               </select>
             </div>

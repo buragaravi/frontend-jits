@@ -56,8 +56,6 @@ const statusCategories = [
   { status: 'partially_fulfilled', label: 'Partially Fulfilled', color: 'bg-purple-100 text-purple-800' }
 ];
 
-const labList = ['LAB01', 'LAB02', 'LAB03', 'LAB04', 'LAB05', 'LAB06', 'LAB07', 'LAB08'];
-
 const AllLabRequestsPage = () => {
   const [allRequests, setAllRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
@@ -68,6 +66,10 @@ const AllLabRequestsPage = () => {
   const [showUnifiedDialog, setShowUnifiedDialog] = useState(false);
   const [availableChemicals, setAvailableChemicals] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Dynamic labs state
+  const [labList, setLabList] = useState([]);
+  const [labsLoading, setLabsLoading] = useState(true);
   const [userRole, setUserRole] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -87,7 +89,28 @@ const AllLabRequestsPage = () => {
     }
   }, [token]);
 
-  const fetchAllLabRequests = async () => {
+  const fetchLabs = async () => {
+    try {
+      setLabsLoading(true);
+      const response = await axios.get('https://backend-jits.onrender.com/api/labs?includeInactive=false', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const labs = response.data?.data || [];
+      const labIds = labs.map(lab => lab.labId);
+      setLabList(labIds);
+      return labIds;
+    } catch (error) {
+      console.error('Error fetching labs:', error);
+      // Fallback to central-store if API fails
+      const fallbackLabIds = ['central-store'];
+      setLabList(fallbackLabIds);
+      return fallbackLabIds;
+    } finally {
+      setLabsLoading(false);
+    }
+  };
+
+  const fetchAllLabRequests = async (currentLabList = null) => {
     setLoading(true);
     try {
       setError(null);
@@ -97,8 +120,11 @@ const AllLabRequestsPage = () => {
         return;
       }
 
+      // Use provided lab list or fetch labs first
+      const labIds = currentLabList || await fetchLabs();
+
       // Fetch requests for all labs
-      const requestPromises = labList.map(async (labId) => {
+      const requestPromises = labIds.map(async (labId) => {
         try {
           const response = await axios.get(
             `https://backend-jits.onrender.com/api/requests/lab/${labId}`,

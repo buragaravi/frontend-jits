@@ -17,7 +17,7 @@ const StockCheckPage = () => {
   const [error, setError] = useState('');
 
   const labOptions = [
-    { label: 'Central Lab (All)', value: 'central-store' },
+    { label: 'Central Store (All)', value: 'central-store' },
     { label: 'Lab 1', value: 'LAB01' },
     { label: 'Lab 2', value: 'LAB02' },
     { label: 'Lab 3', value: 'LAB03' },

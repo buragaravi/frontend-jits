@@ -398,7 +398,7 @@ const AllLabRequestsPage = () => {
       doc.setTextColor(109, 18, 63);
       doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
       doc.setTextColor(150);
-      doc.text('Confidential - For Central Lab Use Only', leftMargin, pageHeight - 10);
+      doc.text('Confidential - For Central Store Use Only', leftMargin, pageHeight - 10);
       doc.text(`Generated: ${format(new Date(), 'dd/MM/yyyy hh:mm a')}`, pageWidth - rightMargin, pageHeight - 10, { align: 'right' });
     }
     

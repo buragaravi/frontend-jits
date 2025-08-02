@@ -38,7 +38,7 @@ const CommentSection = ({ quotationId, comments: propComments, createdByRole, st
   // Helper to get display name for role
   const getDisplayName = (role) => {
     if (role === 'admin') return 'Admin';
-    if (role === 'central_store_admin') return 'Central Lab Admin';
+    if (role === 'central_store_admin') return 'Central Store Admin';
     if (role === 'lab_assistant') return 'Lab Assistant';
     return role;
   };

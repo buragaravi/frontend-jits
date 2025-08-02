@@ -804,7 +804,7 @@ const QuotationCard = ({ quotation, refreshList }) => {
                 )}
             </div>
 
-            {/* Modal: Central Lab Admin Add to Draft */}
+            {/* Modal: Central Store Admin Add to Draft */}
             {showAddChemicalModal && (
                 <ChemicalAddToDraftModal
                     isOpen={showAddChemicalModal}

@@ -65,7 +65,7 @@
 2. **Bulk Operations**: Edit multiple items simultaneously
 3. **Clear Visual Feedback**: Highlighted changes, clear current vs original values
 4. **Accurate Change Tracking**: Only sends actual changes to backend
-5. **Admin-Only Access**: Strictly limited to 'admin' role (not central_lab_admin)
+5. **Admin-Only Access**: Strictly limited to 'admin' role (not central_store_admin)
 
 ## Current State
 - ✅ Frontend implementation complete

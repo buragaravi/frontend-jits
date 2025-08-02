@@ -148,7 +148,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
   const [departments, setDepartments] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
 
-  const isAdmin = userRole === 'admin' || userRole === 'central_lab_admin';
+  const isAdmin = userRole === 'admin' || userRole === 'central_store_admin';
   const canManageCourses = showAdminActions && isAdmin;
 
   // Fetch courses with filters

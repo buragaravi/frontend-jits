@@ -89,7 +89,7 @@ const App = () => {
             <Route
               path="/dashboard/central"
               element={
-                <ProtectedRoute allowedRoles={['central_lab_admin']}>
+                <ProtectedRoute allowedRoles={['central_store_admin']}>
                       <CentralAdminDashboard />
                 </ProtectedRoute>
               }
@@ -117,7 +117,7 @@ const App = () => {
             <Route
               path="/transactions"
               element={
-                <ProtectedRoute allowedRoles={['central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['central_store_admin', 'lab_assistant']}>
                   <div className="p-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-6">
                       <TransactionsPage />
@@ -129,7 +129,7 @@ const App = () => {
             <Route
               path="/notifications"
               element={
-                <ProtectedRoute allowedRoles={['admin', 'faculty', 'lab_assistant', 'central_lab_admin']}>
+                <ProtectedRoute allowedRoles={['admin', 'faculty', 'lab_assistant', 'central_store_admin']}>
                   <div className="p-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-6">
                       <NotificationPage />
@@ -153,7 +153,7 @@ const App = () => {
             <Route
               path="/quotation"
               element={
-                <ProtectedRoute allowedRoles={['central_lab_admin', 'admin']}>
+                <ProtectedRoute allowedRoles={['central_store_admin', 'admin']}>
                   <div className="p-2">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-2">
                       <QuotationPage />
@@ -165,7 +165,7 @@ const App = () => {
             <Route
               path="/experiments"
               element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin']}>
                   <div className="p-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-6">
                       <div className="bg-[#6D123F] p-4 text-white text-center rounded-lg">
@@ -180,7 +180,7 @@ const App = () => {
             <Route
               path="/courses"
               element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin']}>
                   <div className="p-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-6">
                       <CourseList />
@@ -192,7 +192,7 @@ const App = () => {
             <Route
               path="/chemicals/out-of-stock"
               element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <OutOfStockChemicals />
                 </ProtectedRoute>
               }
@@ -201,17 +201,17 @@ const App = () => {
             <Route path="/invoices" element={<InvoicePage />} />
 
             <Route path="/allocate/glassware" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <AllocateGlasswareForm />
                 </ProtectedRoute>
               } />
             <Route path="/stock/glassware" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant', 'faculty']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant', 'faculty']}>
                   <GlasswareStockPage />
                 </ProtectedRoute>
               } />
             <Route path="/allocate/other" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <AllocateOtherProductForm />
                 </ProtectedRoute>
               } />
@@ -231,27 +231,27 @@ const App = () => {
                 </ProtectedRoute>
               } />
             <Route path="/scan/universal" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant', 'faculty']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant', 'faculty']}>
                   <UniversalQRScanner />
                 </ProtectedRoute>
               } />
             <Route path="/qrcodes" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant', 'faculty']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant', 'faculty']}>
                   <QRCodesPage />
                 </ProtectedRoute>
               } />
             <Route path="/equipment/dashboard" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <EquipmentDashboardPage />
                 </ProtectedRoute>
               } />
             <Route path="/equipment/item/:itemId" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <EquipmentDetailPageWrapper />
                 </ProtectedRoute>
               } />
             <Route path="/equipment/allocate" element={
-                <ProtectedRoute allowedRoles={['admin', 'central_lab_admin', 'lab_assistant']}>
+                <ProtectedRoute allowedRoles={['admin', 'central_store_admin', 'lab_assistant']}>
                   <div className="p-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D8E1] p-6">
                       <h2 className="text-xl font-semibold mb-4">Equipment Allocation</h2>

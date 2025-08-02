@@ -151,7 +151,7 @@ const AllLabRequestsPage = () => {
 
   useEffect(() => {
     fetchAllLabRequests();
-    if (userRole === 'lab_assistant' || userRole === 'central_lab_admin') {
+    if (userRole === 'lab_assistant' || userRole === 'central_store_admin') {
       fetchAvailableChemicals();
     }
   }, [token, userRole]);
@@ -417,7 +417,7 @@ const AllLabRequestsPage = () => {
   };
 
   const isLabAssistant = userRole === 'lab_assistant';
-  const isCentralAdmin = userRole === 'central_lab_admin';
+  const isCentralAdmin = userRole === 'central_store_admin';
   const isLabAdmin = userRole === 'admin';
 
   if (loading) {

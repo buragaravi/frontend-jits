@@ -35,8 +35,8 @@ const ChemicalAddToDraftModal = ({
       return;
     }
 
-    // Verify user has permission (central_lab_admin)
-    if (userRole !== 'central_lab_admin') {
+    // Verify user has permission (central_store_admin)
+    if (userRole !== 'central_store_admin') {
       setError('Only central lab admins can add to drafts');
       return;
     }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import AddChemicalForm from './AddChemicalForm';
 import AllocateChemicalForm from './AllocateChemicalForm';
 import CentralChemicalTable from './CentralChemicalTable';
 import LabChemicalTable from './LabChemicalTable';
@@ -122,8 +121,6 @@ const ChemicalDashboard = () => {
     switch (view) {
       case 'central':
         return <CentralChemicalTable />;
-      case 'add':
-        return <AddChemicalForm />;
       case 'allocate':
         return <AllocateChemicalForm />;
       case 'expired':

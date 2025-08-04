@@ -158,12 +158,12 @@ const DEFAULT_DATE_RANGE = () => {
   };
 };
 
-const TransactionsPage = () => {
+const TransactionsPage = ({ labId: propLabId }) => {
   const [transactions, setTransactions] = useState([]);
   const [selectedLabFilter, setSelectedLabFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [role, setRole] = useState('');
-  const [labId, setLabId] = useState('');
+  const [labId, setLabId] = useState(propLabId || '');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -238,19 +238,24 @@ const TransactionsPage = () => {
       const user = decoded.user;
 
       setRole(user.role);
-      setLabId(user.labId);
+      
+      // Only set labId from token if not provided as prop
+      const effectiveLabId = propLabId || user.labId;
+      if (!propLabId) {
+        setLabId(user.labId);
+      }
       
       // Fetch labs and transactions in parallel
       Promise.all([
         fetchLabs(),
-        fetchTransactions(user.role, user.labId)
+        fetchTransactions(user.role, effectiveLabId)
       ]);
     } catch (err) {
       console.error(err);
       setError('Invalid token');
       setLoading(false);
     }
-  }, []);
+  }, [propLabId]);
 
   // Fetch dynamic labs
   const fetchLabs = async () => {

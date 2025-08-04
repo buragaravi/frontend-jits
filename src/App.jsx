@@ -8,7 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TransactionsPage from './features/transactions/TransactionsPage';
 import AdminDashboard from './features/dashboard/AdminDashboard';
 import CentralAdminDashboard from './features/dashboard/CentralLabAdminDashboard';
-import LabAssistantDashboard from './features/dashboard/LabAssistantDashboard';
+import MultiLabAssistantDashboard from './features/dashboard/MultiLabAssistantDashboard';
 import FacultyDashboard from './features/dashboard/FacultyDashboard';
 import NotificationPage from './features/notification/NotificationPage';
 import RequestPage from './features/requests/RequestPage';
@@ -99,7 +99,7 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={['lab_assistant']}>
                  
-                      <LabAssistantDashboard />
+                      <MultiLabAssistantDashboard />
                    
                 </ProtectedRoute>
               }

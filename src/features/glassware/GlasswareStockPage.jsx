@@ -478,14 +478,14 @@ const TableView = ({ groupedStock, labColorMap, searchTerm }) => {
   );
 };
 
-const GlasswareStockPage = () => {
+const GlasswareStockPage = ({ labId: propLabId }) => {
   const [allStock, setAllStock] = useState([]);
   const [groupedStock, setGroupedStock] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLab, setSelectedLab] = useState('all');
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [selectedLab, setSelectedLab] = useState(propLabId || 'all');
+  const [viewMode, setViewMode] = useState('table'); // 'cards' or 'table'
   const navigate = useNavigate();
 
   const labList = [
@@ -536,6 +536,13 @@ const GlasswareStockPage = () => {
     
     fetchAllStock();
   }, []);
+
+  // Update selectedLab when propLabId changes
+  useEffect(() => {
+    if (propLabId) {
+      setSelectedLab(propLabId);
+    }
+  }, [propLabId]);
 
   // Filter based on search term and selected lab
   const filteredGroupedStock = React.useMemo(() => {
@@ -677,21 +684,23 @@ const GlasswareStockPage = () => {
                   </div>
                 </div>
                 
-                {/* Lab Filter */}
-                <div className="bg-white/20 backdrop-blur-sm px-2 py-1.5 rounded border border-white/30 min-w-0 flex-1 xl:flex-initial">
-                  <div className="text-xs text-blue-100 mb-1 font-medium">Lab</div>
-                  <select 
-                    value={selectedLab}
-                    onChange={(e) => setSelectedLab(e.target.value)}
-                    className="px-2 py-1 w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded text-white font-medium focus:outline-none focus:ring-1 focus:ring-white/50 text-xs min-w-20 xl:min-w-28"
-                  >
-                    {labList.map(lab => (
-                      <option key={lab.id} value={lab.id} className="bg-blue-800 text-white">
-                        {lab.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* Lab Filter - Only show if no specific labId is provided */}
+                {!propLabId && (
+                  <div className="bg-white/20 backdrop-blur-sm px-2 py-1.5 rounded border border-white/30 min-w-0 flex-1 xl:flex-initial">
+                    <div className="text-xs text-blue-100 mb-1 font-medium">Lab</div>
+                    <select 
+                      value={selectedLab}
+                      onChange={(e) => setSelectedLab(e.target.value)}
+                      className="px-2 py-1 w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded text-white font-medium focus:outline-none focus:ring-1 focus:ring-white/50 text-xs min-w-20 xl:min-w-28"
+                    >
+                      {labList.map(lab => (
+                        <option key={lab.id} value={lab.id} className="bg-blue-800 text-white">
+                          {lab.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 
                 {/* Print Button */}
                 <div className="bg-white/20 backdrop-blur-sm px-2 py-1.5 rounded border border-white/30">

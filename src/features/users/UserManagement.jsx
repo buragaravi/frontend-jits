@@ -86,20 +86,25 @@ const UserManagement = () => {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [addUserFormData, setAddUserFormData] = useState({
-    userId: '',
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
     role: '',
     labId: '',
+    labAssignments: [],
   });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: '',
     labId: '',
+    labAssignments: [],
   });
+
+  // Lab assignment management state
+  const [selectedLabs, setSelectedLabs] = useState([]);
+  const [editingLabAssignments, setEditingLabAssignments] = useState([]);
 
   // Dynamic labs state
   const [availableLabs, setAvailableLabs] = useState([]);
@@ -110,18 +115,21 @@ const UserManagement = () => {
     const fetchLabs = async () => {
       try {
         setLabsLoading(true);
-        const response = await api.get('/labs?includeInactive=false');
+        const response = await api.get('/labs/assignable');
         const labs = response.data?.data || [];
         setAvailableLabs(labs);
       } catch (error) {
-        console.error('Error fetching labs:', error);
-        // Fallback to central-store if API fails
-        setAvailableLabs([{ 
-          labId: 'central-store', 
-          labName: 'Central Store', 
-          isSystem: true, 
-          isActive: true 
-        }]);
+        console.error('Error fetching assignable labs:', error);
+        // Fallback to regular labs excluding central-store
+        try {
+          const fallbackResponse = await api.get('/labs?includeInactive=false');
+          const allLabs = fallbackResponse.data?.data || [];
+          const assignableLabs = allLabs.filter(lab => lab.labId !== 'central-store');
+          setAvailableLabs(assignableLabs);
+        } catch (fallbackError) {
+          console.error('Error fetching fallback labs:', fallbackError);
+          setAvailableLabs([]);
+        }
       } finally {
         setLabsLoading(false);
       }
@@ -147,20 +155,28 @@ const UserManagement = () => {
       });
       setIsAddUserModalOpen(false);
       setAddUserFormData({
-        userId: '',
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
         role: '',
         labId: '',
+        labAssignments: [],
       });
+      setSelectedLabs([]);
     },
     onError: (error) => {
+      console.error('Frontend - User registration error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        fullError: error
+      });
+      
       Swal.fire({
         icon: 'error',
         title: 'Failed to Add User',
-        text: error.response?.data?.message || 'An error occurred while adding the user.',
+        text: error.response?.data?.message || error.response?.data?.msg || 'An error occurred while adding the user.',
         confirmButtonColor: '#ef4444',
       });
     },
@@ -223,6 +239,49 @@ const UserManagement = () => {
     },
   });
 
+  // Lab assignment mutations
+  const addLabAssignmentMutation = useMutation({
+    mutationFn: async ({ userId, labAssignment }) => {
+      const response = await api.post(`/users/${userId}/lab-assignments`, labAssignment);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['users']);
+      toast.success('Lab assignment added successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to add lab assignment');
+    },
+  });
+
+  const updateLabAssignmentMutation = useMutation({
+    mutationFn: async ({ userId, labId, labAssignment }) => {
+      const response = await api.put(`/users/${userId}/lab-assignments/${labId}`, labAssignment);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['users']);
+      toast.success('Lab assignment updated successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to update lab assignment');
+    },
+  });
+
+  const removeLabAssignmentMutation = useMutation({
+    mutationFn: async ({ userId, labId }) => {
+      const response = await api.delete(`/users/${userId}/lab-assignments/${labId}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['users']);
+      toast.success('Lab assignment removed successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to remove lab assignment');
+    },
+  });
+
   const handleEdit = (user) => {
     setSelectedUser(user);
     setFormData({
@@ -230,26 +289,72 @@ const UserManagement = () => {
       email: user.email,
       role: user.role,
       labId: user.labId,
+      labAssignments: user.labAssignments || [],
     });
+    setEditingLabAssignments(user.labAssignments || []);
     setIsEditModalOpen(true);
+  };
+
+  // Lab assignment helper functions
+  const addLabToAssignments = (assignments, labId, permission = 'read') => {
+    const lab = availableLabs.find(l => l.labId === labId);
+    if (!lab) return assignments;
+    
+    const existingIndex = assignments.findIndex(a => a.labId === labId);
+    if (existingIndex >= 0) {
+      // Update existing assignment
+      const updated = [...assignments];
+      updated[existingIndex] = { ...updated[existingIndex], permission };
+      return updated;
+    } else {
+      // Add new assignment
+      return [...assignments, {
+        labId: lab.labId,
+        labName: lab.labName,
+        permission,
+        isActive: true
+      }];
+    }
+  };
+
+  const removeLabFromAssignments = (assignments, labId) => {
+    return assignments.filter(a => a.labId !== labId);
+  };
+
+  const updateLabPermission = (assignments, labId, permission) => {
+    return assignments.map(a => a.labId === labId ? { ...a, permission } : a);
   };
 
   const handleAddUser = () => {
     setAddUserFormData({
-      userId: '',
       name: '',
       email: '',
       password: '',
       confirmPassword: '',
       role: '',
       labId: '',
+      labAssignments: [],
     });
+    setSelectedLabs([]);
     setIsAddUserModalOpen(true);
   };
 
   const handleAddUserFormChange = (e) => {
     const { name, value } = e.target;
-    setAddUserFormData((prev) => ({ ...prev, [name]: value }));
+    setAddUserFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // Reset lab assignments when role changes away from lab_assistant
+      if (name === 'role' && value !== 'lab_assistant') {
+        updated.labAssignments = [];
+        updated.labId = '';
+      }
+      return updated;
+    });
+    
+    // Reset selected labs when role changes
+    if (name === 'role' && value !== 'lab_assistant') {
+      setSelectedLabs([]);
+    }
   };
 
   const handleAddUserSubmit = (e) => {
@@ -275,23 +380,25 @@ const UserManagement = () => {
       return;
     }
 
-    const payload = addUserFormData.role === 'lab_assistant'
-      ? {
-          userId: addUserFormData.userId,
-          name: addUserFormData.name,
-          email: addUserFormData.email,
-          password: addUserFormData.password,
-          role: addUserFormData.role,
-          labId: addUserFormData.labId
-        }
-      : {
-          userId: addUserFormData.userId,
-          name: addUserFormData.name,
-          email: addUserFormData.email,
-          password: addUserFormData.password,
-          role: addUserFormData.role
-        };
+    // Prepare payload based on role
+    let payload = {
+      name: addUserFormData.name,
+      email: addUserFormData.email,
+      password: addUserFormData.password,
+      role: addUserFormData.role
+    };
 
+    // For lab_assistant, use lab assignments if available, otherwise fall back to single labId
+    if (addUserFormData.role === 'lab_assistant') {
+      if (addUserFormData.labAssignments.length > 0) {
+        payload.labAssignments = addUserFormData.labAssignments;
+      } else if (addUserFormData.labId) {
+        // Fallback for single lab selection
+        payload.labId = addUserFormData.labId;
+      }
+    }
+
+    console.log('Frontend - Sending user registration data:', JSON.stringify(payload, null, 2));
     addUserMutation.mutate(payload);
   };
 
@@ -313,7 +420,9 @@ const UserManagement = () => {
       email: '',
       role: '',
       labId: '',
+      labAssignments: [],
     });
+    setEditingLabAssignments([]);
   };
 
   const closeDeleteModal = () => {
@@ -337,9 +446,33 @@ const UserManagement = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedUser) {
+      // Prepare update data
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+      };
+
+      // For lab assistants, include lab assignments (even if empty)
+      if (formData.role === 'lab_assistant') {
+        updateData.labAssignments = editingLabAssignments;
+        
+        // Also include legacy labId as fallback if no lab assignments
+        if (editingLabAssignments.length === 0 && formData.labId) {
+          updateData.labId = formData.labId;
+        }
+      } else {
+        // For non-lab assistants, include labId if provided (legacy support)
+        if (formData.labId) {
+          updateData.labId = formData.labId;
+        }
+      }
+
+      console.log('Updating user with data:', updateData); // Debug log
+
       updateUserMutation.mutate({
         userId: selectedUser._id,
-        userData: formData,
+        userData: updateData,
       });
     }
   };
@@ -462,7 +595,7 @@ const UserManagement = () => {
                     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Name</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Email</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Lab ID</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Lab Access</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Last Login</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Actions</th>
                   </tr>
@@ -484,8 +617,37 @@ const UserManagement = () => {
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user.labId || '-'}
+                      <td className="px-6 py-4">
+                        {user.role === 'lab_assistant' ? (
+                          user.labAssignments && user.labAssignments.length > 0 ? (
+                            <div className="space-y-1">
+                              {user.labAssignments.map((assignment, idx) => (
+                                <div key={assignment.labId || idx} className="flex items-center gap-2">
+                                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-md bg-green-100 text-green-800 border border-green-200">
+                                    {assignment.labName || assignment.labId}
+                                  </span>
+                                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-md border ${
+                                    assignment.permission === 'read_write' 
+                                      ? 'bg-orange-100 text-orange-800 border-orange-200' 
+                                      : 'bg-blue-100 text-blue-800 border-blue-200'
+                                  }`}>
+                                    {assignment.permission === 'read_write' ? 'Full Access' : 'Read Only'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            user.labId ? (
+                              <span className="inline-flex px-2 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-800 border border-gray-200">
+                                {user.labId} (Legacy)
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">No lab assigned</span>
+                            )
+                          )
+                        ) : (
+                          <span className="text-gray-400 text-sm">-</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {user.lastLogin ? format(new Date(user.lastLogin), 'PPpp') : 'Never'}
@@ -557,19 +719,37 @@ const UserManagement = () => {
                     {/* User Details */}
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-500 min-w-[80px]">User ID:</span>
-                        <span className="text-sm text-gray-900 font-medium">{user.userId}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-gray-500 min-w-[80px]">Email:</span>
                         <span className="text-sm text-gray-900 break-all">{user.email}</span>
                       </div>
                       
-                      {user.labId && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-500 min-w-[80px]">Lab ID:</span>
-                          <span className="text-sm text-gray-900 font-medium">{user.labId}</span>
+                      {user.role === 'lab_assistant' && (user.labAssignments?.length > 0 || user.labId) && (
+                        <div className="flex flex-col gap-2">
+                          <span className="text-sm font-medium text-gray-500">Lab Access:</span>
+                          {user.labAssignments && user.labAssignments.length > 0 ? (
+                            <div className="space-y-2">
+                              {user.labAssignments.map((assignment, idx) => (
+                                <div key={assignment.labId || idx} className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                      {assignment.labName || assignment.labId}
+                                    </span>
+                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${
+                                      assignment.permission === 'read_write' 
+                                        ? 'bg-orange-100 text-orange-800 border-orange-200' 
+                                        : 'bg-blue-100 text-blue-800 border-blue-200'
+                                    }`}>
+                                      {assignment.permission === 'read_write' ? 'Full Access' : 'Read Only'}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : user.labId ? (
+                            <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                              {user.labId} (Legacy)
+                            </span>
+                          ) : null}
                         </div>
                       )}
                       
@@ -598,7 +778,7 @@ const UserManagement = () => {
                         disabled={resetPasswordMutation.isLoading}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1 17 21 9z" />
                         </svg>
                         <span>Reset</span>
                       </button>
@@ -636,7 +816,7 @@ const UserManagement = () => {
       {/* Add User Modal */}
       {isAddUserModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-lg w-full mx-4 border border-white/20 relative overflow-hidden">
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full mx-4 border border-white/20 relative overflow-hidden">
             {/* Modal Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
             
@@ -650,117 +830,250 @@ const UserManagement = () => {
                 <h3 className="text-2xl font-bold text-gray-800">Add New User</h3>
               </div>
 
-              <form onSubmit={handleAddUserSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Role</label>
-                  <div className="relative">
-                    <select
-                      name="role"
-                      value={addUserFormData.role}
-                      onChange={(e) => {
-                        handleAddUserFormChange(e);
-                        if (e.target.value !== 'lab_assistant') {
-                          setAddUserFormData(prev => ({ ...prev, labId: '' }));
-                        }
-                      }}
-                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                      required
-                    >
-                      <option value="">Select role</option>
-                      <option value="admin">Admin</option>
-                      <option value="central_store_admin">Central Store Admin</option>
-                      <option value="lab_assistant">Lab Assistant</option>
-                      <option value="faculty">Faculty</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                      <svg className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {addUserFormData.role === 'lab_assistant' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Lab</label>
-                    <div className="relative">
-                      <select
-                        name="labId"
-                        value={addUserFormData.labId}
+              <form onSubmit={handleAddUserSubmit} className="space-y-6">
+                {/* Two Column Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Basic Info */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Basic Information</h4>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={addUserFormData.name}
                         onChange={handleAddUserFormChange}
-                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                        placeholder="Enter full name"
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         required
-                      >
-                        <option value="">Select lab</option>
-                        {availableLabs.map((lab) => (
-                          <option key={lab.labId} value={lab.labId}>
-                            {lab.labName} ({lab.labId})
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <svg className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={addUserFormData.email}
+                        onChange={handleAddUserFormChange}
+                        placeholder="Enter email address"
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Select Role</label>
+                      <div className="relative">
+                        <select
+                          name="role"
+                          value={addUserFormData.role}
+                          onChange={(e) => {
+                            handleAddUserFormChange(e);
+                            if (e.target.value !== 'lab_assistant') {
+                              setAddUserFormData(prev => ({ ...prev, labId: '' }));
+                            }
+                          }}
+                          className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                          required
+                        >
+                          <option value="">Select role</option>
+                          <option value="admin">Admin</option>
+                          <option value="central_store_admin">Central Store Admin</option>
+                          <option value="lab_assistant">Lab Assistant</option>
+                          <option value="faculty">Faculty</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                          <svg className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Right Column - Security & Lab Access */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Security & Access</h4>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                      <input
+                        type="password"
+                        name="password"
+                        value={addUserFormData.password}
+                        onChange={handleAddUserFormChange}
+                        placeholder="Enter password (min 6 characters)"
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                        minLength={6}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        value={addUserFormData.confirmPassword}
+                        onChange={handleAddUserFormChange}
+                        placeholder="Confirm password"
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                        minLength={6}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lab Assignments Section - Full Width */}
+                {addUserFormData.role === 'lab_assistant' && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4">Lab Assignments</h4>
+                    <p className="text-sm text-gray-500 mb-4">Select labs and assign permissions for each lab.</p>
+                    
+                    {/* Current Lab Assignments */}
+                    {addUserFormData.labAssignments.length > 0 && (
+                      <div className="mb-6">
+                        <h5 className="text-sm font-medium text-gray-700 mb-3">Assigned Labs:</h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {addUserFormData.labAssignments.map((assignment, index) => (
+                            <div key={assignment.labId} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                              <div className="flex items-center gap-3">
+                                <span className="font-medium text-green-800">{assignment.labName}</span>
+                                <span className="text-sm text-green-600">({assignment.labId})</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <select
+                                  value={assignment.permission}
+                                  onChange={(e) => {
+                                    const updatedAssignments = [...addUserFormData.labAssignments];
+                                    updatedAssignments[index] = { ...updatedAssignments[index], permission: e.target.value };
+                                    setAddUserFormData(prev => ({ ...prev, labAssignments: updatedAssignments }));
+                                  }}
+                                  className="text-xs px-2 py-1 bg-white border border-green-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                >
+                                  <option value="read">Read Only</option>
+                                  <option value="read_write">Full Access</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedAssignments = addUserFormData.labAssignments.filter((_, i) => i !== index);
+                                    setAddUserFormData(prev => ({ ...prev, labAssignments: updatedAssignments }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                  title="Remove lab assignment"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Add New Lab Assignment */}
+                    <div className="space-y-3">
+                      <h5 className="text-sm font-medium text-gray-700">Add Lab Assignment:</h5>
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <select
+                            value={selectedLabs[0] || ''}
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                setSelectedLabs([e.target.value]);
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg text-gray-800 text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                          >
+                            <option value="">Select a lab to add</option>
+                            {availableLabs
+                              .filter(lab => !addUserFormData.labAssignments.some(a => a.labId === lab.labId))
+                              .map((lab) => (
+                                <option key={lab.labId} value={lab.labId}>
+                                  {lab.labName} ({lab.labId})
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <div className="w-40">
+                          <select
+                            id="newLabPermission"
+                            defaultValue="read"
+                            className="w-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg text-gray-800 text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                          >
+                            <option value="read">Read Only</option>
+                            <option value="read_write">Full Access</option>
+                          </select>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const selectedLabId = selectedLabs[0];
+                            const permissionSelect = document.getElementById('newLabPermission');
+                            const permission = permissionSelect?.value || 'read';
+                            
+                            if (selectedLabId) {
+                              const lab = availableLabs.find(l => l.labId === selectedLabId);
+                              if (lab && !addUserFormData.labAssignments.some(a => a.labId === selectedLabId)) {
+                                const newAssignment = {
+                                  labId: lab.labId,
+                                  labName: lab.labName,
+                                  permission: permission,
+                                  isActive: true
+                                };
+                                setAddUserFormData(prev => ({
+                                  ...prev,
+                                  labAssignments: [...prev.labAssignments, newAssignment]
+                                }));
+                                setSelectedLabs([]);
+                                // Reset permission selector
+                                if (permissionSelect) permissionSelect.value = 'read';
+                              }
+                            }
+                          }}
+                          disabled={!selectedLabs[0] || addUserFormData.labAssignments.some(a => a.labId === selectedLabs[0])}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Fallback to single lab selection if no assignments */}
+                    {addUserFormData.labAssignments.length === 0 && (
+                      <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800 mb-3">
+                          <strong>Fallback:</strong> If no lab assignments are made above, you can select a single lab:
+                        </p>
+                        <select
+                          name="labId"
+                          value={addUserFormData.labId}
+                          onChange={handleAddUserFormChange}
+                          className="w-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-yellow-300/50 rounded-lg text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 appearance-none"
+                        >
+                          <option value="">Select single lab (fallback)</option>
+                          {availableLabs.map((lab) => (
+                            <option key={lab.labId} value={lab.labId}>
+                              {lab.labName} ({lab.labId})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={addUserFormData.name}
-                    onChange={handleAddUserFormChange}
-                    placeholder="Enter full name"
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={addUserFormData.email}
-                    onChange={handleAddUserFormChange}
-                    placeholder="Enter email address"
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={addUserFormData.password}
-                    onChange={handleAddUserFormChange}
-                    placeholder="Enter password (min 6 characters)"
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                    minLength={6}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={addUserFormData.confirmPassword}
-                    onChange={handleAddUserFormChange}
-                    placeholder="Confirm password"
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                    minLength={6}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-4">
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     type="button"
                     onClick={() => setIsAddUserModalOpen(false)}
@@ -798,7 +1111,7 @@ const UserManagement = () => {
       {/* Edit User Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-white/20 relative overflow-hidden">
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full mx-4 border border-white/20 relative overflow-hidden">
             {/* Modal Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
             
@@ -810,56 +1123,205 @@ const UserManagement = () => {
                 <h3 className="text-2xl font-bold text-gray-800">Edit User</h3>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Two Column Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Basic Info */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Basic Information</h4>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Column - Role & Access */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Role & Access</h4>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={(e) => {
+                          handleChange(e);
+                          // Reset lab assignments when role changes away from lab_assistant
+                          if (e.target.value !== 'lab_assistant') {
+                            setFormData(prev => ({ ...prev, labAssignments: [] }));
+                            setEditingLabAssignments([]);
+                          }
+                        }}
+                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      >
+                        <option value="">Select a role</option>
+                        <option value="admin">Admin</option>
+                        <option value="central_store_admin">Central Store Admin</option>
+                        <option value="lab_assistant">Lab Assistant</option>
+                        <option value="faculty">Faculty</option>
+                      </select>
+                    </div>
+
+                    {/* Legacy Lab ID field for non-lab assistants */}
+                    {formData.role !== 'lab_assistant' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Lab ID</label>
+                        <input
+                          type="text"
+                          name="labId"
+                          value={formData.labId}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  >
-                    <option value="">Select a role</option>
-                    <option value="admin">Admin</option>
-                    <option value="central_store_admin">Central Store Admin</option>
-                    <option value="lab_assistant">Lab Assistant</option>
-                    <option value="faculty">Faculty</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Lab ID</label>
-                  <input
-                    type="text"
-                    name="labId"
-                    value={formData.labId}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div className="flex justify-end space-x-4 pt-4">
+
+                {/* Lab Assignments Section - Full Width */}
+                {formData.role === 'lab_assistant' && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4">Lab Assignments</h4>
+                    <p className="text-sm text-gray-500 mb-4">Manage lab access and permissions.</p>
+                    
+                    {/* Current Lab Assignments */}
+                    {editingLabAssignments.length > 0 && (
+                      <div className="mb-6">
+                        <h5 className="text-sm font-medium text-gray-700 mb-3">Current Lab Assignments:</h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {editingLabAssignments.map((assignment, index) => (
+                            <div key={assignment.labId} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                              <div className="flex items-center gap-3">
+                                <span className="font-medium text-green-800">{assignment.labName || assignment.labId}</span>
+                                <span className="text-sm text-green-600">({assignment.labId})</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <select
+                                  value={assignment.permission}
+                                  onChange={(e) => {
+                                    const updatedAssignments = [...editingLabAssignments];
+                                    updatedAssignments[index] = { ...updatedAssignments[index], permission: e.target.value };
+                                    setEditingLabAssignments(updatedAssignments);
+                                    setFormData(prev => ({ ...prev, labAssignments: updatedAssignments }));
+                                  }}
+                                  className="text-xs px-2 py-1 bg-white border border-green-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                >
+                                  <option value="read">Read Only</option>
+                                  <option value="read_write">Full Access</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedAssignments = editingLabAssignments.filter((_, i) => i !== index);
+                                    setEditingLabAssignments(updatedAssignments);
+                                    setFormData(prev => ({ ...prev, labAssignments: updatedAssignments }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                  title="Remove lab assignment"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Add New Lab Assignment */}
+                    <div className="space-y-3">
+                      <h5 className="text-sm font-medium text-gray-700">Add Lab Assignment:</h5>
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <select
+                            id="editNewLabSelect"
+                            defaultValue=""
+                            className="w-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg text-gray-800 text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                          >
+                            <option value="">Select a lab to add</option>
+                            {availableLabs
+                              .filter(lab => !editingLabAssignments.some(a => a.labId === lab.labId))
+                              .map((lab) => (
+                                <option key={lab.labId} value={lab.labId}>
+                                  {lab.labName} ({lab.labId})
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <div className="w-40">
+                          <select
+                            id="editNewLabPermission"
+                            defaultValue="read"
+                            className="w-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg text-gray-800 text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                          >
+                            <option value="read">Read Only</option>
+                            <option value="read_write">Full Access</option>
+                          </select>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const labSelect = document.getElementById('editNewLabSelect');
+                            const permissionSelect = document.getElementById('editNewLabPermission');
+                            const selectedLabId = labSelect?.value;
+                            const permission = permissionSelect?.value || 'read';
+                            
+                            if (selectedLabId) {
+                              const lab = availableLabs.find(l => l.labId === selectedLabId);
+                              if (lab && !editingLabAssignments.some(a => a.labId === selectedLabId)) {
+                                const newAssignment = {
+                                  labId: lab.labId,
+                                  labName: lab.labName,
+                                  permission: permission,
+                                  isActive: true
+                                };
+                                const updatedAssignments = [...editingLabAssignments, newAssignment];
+                                setEditingLabAssignments(updatedAssignments);
+                                setFormData(prev => ({ ...prev, labAssignments: updatedAssignments }));
+                                
+                                // Reset selectors
+                                if (labSelect) labSelect.value = '';
+                                if (permissionSelect) permissionSelect.value = 'read';
+                              }
+                            }
+                          }}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     type="button"
                     onClick={closeModal}

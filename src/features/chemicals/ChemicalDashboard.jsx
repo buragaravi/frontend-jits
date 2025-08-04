@@ -5,10 +5,10 @@ import CentralChemicalTable from './CentralChemicalTable';
 import LabChemicalTable from './LabChemicalTable';
 import ExpiredChemicalManager from './ExpiredChemicalManager';
 
-const ChemicalDashboard = () => {
+const ChemicalDashboard = ({ labId: propLabId }) => {
   const [userRole, setUserRole] = useState('');
   const [userId, setUserId] = useState('');
-  const [labId, setLabId] = useState('');
+  const [labId, setLabId] = useState(propLabId || '');
   const [view, setView] = useState('central');
   const [isLoading, setIsLoading] = useState(true);
   const [expandedLab, setExpandedLab] = useState(null);
@@ -19,11 +19,15 @@ const ChemicalDashboard = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        const { role, id, labId } = decoded.user;
+        const { role, id, labId: tokenLabId } = decoded.user;
 
         setUserRole(role);
         setUserId(id);
-        setLabId(labId);
+        
+        // Only set labId from token if not provided as prop
+        if (!propLabId && tokenLabId) {
+          setLabId(tokenLabId);
+        }
 
         // Set initial view for lab assistant
         if (role === 'lab_assistant') {
@@ -35,7 +39,7 @@ const ChemicalDashboard = () => {
         setIsLoading(false);
       }
     }
-  }, []);
+  }, [propLabId]);
 
   const renderTabs = () => {
     if (userRole === 'admin' || userRole === 'central_store_admin') {

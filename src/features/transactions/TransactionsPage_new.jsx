@@ -43,7 +43,7 @@ const ToastNotification = ({ toast, onClose }) => (
 
 // Loading component with shimmer effect
 const LoadingSpinner = () => (
-  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
     <style>{`
       @keyframes shimmer {
         0% { background-position: -200% 0; }
@@ -345,8 +345,8 @@ const TransactionsPage = () => {
   const getTransactionTypeColor = (type) => {
     switch(type.toLowerCase()) {
       case 'allocation': return 'bg-blue-50 text-blue-700 border border-blue-200';
-      case 'transfer': return 'bg-indigo-50 text-indigo-700 border border-indigo-200';
-      case 'consumption': return 'bg-purple-50 text-purple-700 border border-purple-200';
+      case 'transfer': return 'bg-blue-50 text-blue-700 border border-blue-200';
+      case 'consumption': return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'entry': return 'bg-green-50 text-green-700 border border-green-200';
       case 'adjustment': return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
       default: return 'bg-gray-50 text-gray-700 border border-gray-200';
@@ -487,7 +487,7 @@ const TransactionsPage = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50"
+      className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50"
     >
       <div className="text-center p-8">
         <FiAlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
@@ -506,7 +506,7 @@ const TransactionsPage = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Global styles for smooth scrolling and animations */}
       <style>{`
         @media (prefers-reduced-motion: no-preference) {
@@ -545,7 +545,7 @@ const TransactionsPage = () => {
         >
           {/* Enhanced header with gradient and better typography */}
           <div className="relative p-8 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-600/20" />
             <div className="relative z-10">
               <motion.h1 
                 initial={{ x: -20, opacity: 0 }}
@@ -704,19 +704,19 @@ const TransactionsPage = () => {
               
               <motion.div 
                 whileHover={{ scale: 1.02 }}
-                className="bg-white rounded-2xl shadow-lg p-4 md:p-6 border-l-8 border-indigo-500 flex flex-col items-center"
+                className="bg-white rounded-2xl shadow-lg p-4 md:p-6 border-l-8 border-blue-500 flex flex-col items-center"
               >
-                <span className="text-3xl md:text-4xl font-bold text-indigo-500">{totalQuantity}</span>
-                <span className="text-indigo-500 font-semibold mt-2 text-center text-sm md:text-base">Total Drugs Moved</span>
+                <span className="text-3xl md:text-4xl font-bold text-blue-500">{totalQuantity}</span>
+                <span className="text-blue-500 font-semibold mt-2 text-center text-sm md:text-base">Total Drugs Moved</span>
               </motion.div>
               
               {(role === 'admin' || role === 'central_store_admin') && (
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
-                  className="bg-white rounded-2xl shadow-lg p-4 md:p-6 border-l-8 border-purple-500 flex flex-col items-center"
+                  className="bg-white rounded-2xl shadow-lg p-4 md:p-6 border-l-8 border-blue-600 flex flex-col items-center"
                 >
-                  <span className="text-xl md:text-2xl font-bold text-purple-500">{mostActiveLab}</span>
-                  <span className="text-purple-500 font-semibold mt-2 text-center text-sm md:text-base">Most Active Lab</span>
+                  <span className="text-xl md:text-2xl font-bold text-blue-600">{mostActiveLab}</span>
+                  <span className="text-blue-600 font-semibold mt-2 text-center text-sm md:text-base">Most Active Lab</span>
                 </motion.div>
               )}
             </motion.div>

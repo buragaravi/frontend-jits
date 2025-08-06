@@ -613,9 +613,9 @@ const AdminDashboard = () => {
         {/* Enhanced Header Section */}
         <div 
           className="relative overflow-hidden"
-          style={getSafeBackground('header', '#1d4ed8')}
+          style={getSafeBackground('header', '#1e3a8a')}
         >
-          <div className="absolute inset-0 bg-blue-800/20"></div>
+          <div className="absolute inset-0 bg-blue-900/20"></div>
           <div className="relative z-10 w-full flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
             <div className="flex items-center gap-4">
               <div 

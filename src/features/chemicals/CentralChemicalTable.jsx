@@ -677,7 +677,7 @@ const CentralChemicalTable = () => {
                 <div className="h-2 bg-gray-200 rounded overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
-                      lab === 'central-store' ? 'bg-blue-500' : 'bg-indigo-500'
+                      lab === 'central-store' ? 'bg-blue-500' : 'bg-blue-500'
                     }`}
                     style={{ width: `${percentage}%` }}
                   />

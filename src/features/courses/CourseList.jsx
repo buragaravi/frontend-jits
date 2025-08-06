@@ -432,8 +432,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
       <div className="w-full p-4 sm:p-6">
         {/* Floating background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         <div className="relative w-full ">
@@ -447,8 +447,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
           {/* Main Content Card */}
           <div className="glass-effect bg-white/90 rounded-2xl shadow-xl border border-white/20 overflow-hidden animate-slideInBottom">
             {/* Enhanced Header */}
-            <div className="relative p-6 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-800/20 to-indigo-800/20"></div>
+            <div className="relative p-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-700 text-white overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-800/20 to-blue-800/20"></div>
               <div className="relative z-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-4">
@@ -586,7 +586,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                 </div>
               ) : filteredCourses.length === 0 ? (
                 <div className="text-center py-16 animate-fadeInScale">
-                  <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mb-6">
+                  <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-100 rounded-2xl flex items-center justify-center mb-6">
                     <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
@@ -604,7 +604,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                         setEditingCourse(null);
                         setShowForm(true);
                       }}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl text-white font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 rounded-xl text-white font-semibold hover:from-blue-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       Create Your First Course
                     </button>
@@ -636,7 +636,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                     // Table View Implementation will go here
                     <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-lg bg-white">
                       <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <thead className="bg-gradient-to-r from-blue-50 to-blue-50">
                           <tr>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Course</th>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider mobile-hide">Department</th>
@@ -656,7 +656,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                             >
                               <td className="px-6 py-4">
                                 <div className="flex items-center">
-                                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
                                     {course.courseCode.charAt(0)}
                                   </div>
                                   <div className="ml-4">

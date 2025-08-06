@@ -9,10 +9,10 @@ const CourseCard = ({ course, onEdit, onDelete, canManage }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover-lift group">
       {/* Course Header */}
-      <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+      <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-50 border-b border-gray-200">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
               {course.courseCode.charAt(0)}
             </div>
             <div className="ml-4">

@@ -67,13 +67,13 @@ const ExperimentSelector = ({ onExperimentSelect }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
-        <label className="block text-sm font-medium text-[#6D123F] mb-1">
+        <label className="block text-sm font-medium text-blue-800 mb-1">
           Semester
         </label>
         <select
           value={selectedSemester}
           onChange={handleSemesterChange}
-          className="w-full px-3 py-2 text-sm md:text-base border border-[#E8D8E1] rounded-lg focus:ring-2 focus:ring-[#6D123F] focus:border-[#6D123F] transition-colors"
+          className="w-full px-3 py-2 text-sm md:text-base border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-blue-800 transition-colors"
           required
         >
           <option value="">Select Semester</option>
@@ -86,13 +86,13 @@ const ExperimentSelector = ({ onExperimentSelect }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#6D123F] mb-1">
+        <label className="block text-sm font-medium text-blue-800 mb-1">
           Experiment
         </label>
         <select
           value={selectedExperiment}
           onChange={handleExperimentChange}
-          className="w-full px-3 py-2 text-sm md:text-base border border-[#E8D8E1] rounded-lg focus:ring-2 focus:ring-[#6D123F] focus:border-[#6D123F] transition-colors"
+          className="w-full px-3 py-2 text-sm md:text-base border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-blue-800 transition-colors"
           required
           disabled={!selectedSemester || isLoading}
         >

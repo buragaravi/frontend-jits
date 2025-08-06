@@ -14,16 +14,16 @@ import { GlasswareStockPage } from '../glassware';
 const SkeletonLoader = ({ type = 'card' }) => {
   if (type === 'card') {
     return (
-      <div className="animate-pulse rounded-2xl p-6 h-40 w-full bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="h-4 bg-gray-200/50 rounded-full w-3/4 mb-4"></div>
-        <div className="h-3 bg-gray-200/50 rounded-full w-1/2 mb-3"></div>
-        <div className="h-3 bg-gray-200/50 rounded-full w-2/3"></div>
+      <div className="animate-pulse rounded-2xl p-6 h-40 w-full bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="h-4 bg-blue-200/50 rounded-full w-3/4 mb-4"></div>
+        <div className="h-3 bg-blue-200/50 rounded-full w-1/2 mb-3"></div>
+        <div className="h-3 bg-blue-200/50 rounded-full w-2/3"></div>
       </div>
     );
   }
   return (
     <div className="animate-pulse flex items-center justify-center h-40">
-      <div className="rounded-full h-12 w-12 bg-gray-200/50"></div>
+      <div className="rounded-full h-12 w-12 bg-blue-200/50"></div>
     </div>
   );
 };
@@ -253,16 +253,11 @@ const MultiLabDashboard = () => {
   // Animation keyframes
   const AnimatedBackground = () => (
     <style>{`
-      @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
       @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
       @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-      .animated-gradient { background-size: 400% 400%; animation: gradientShift 15s ease infinite; }
+      @keyframes shimmer { 100% { transform: translateX(100%); } }
       .fade-in { animation: fadeIn 0.3s ease-out forwards; }
       .slide-down { animation: slideDown 0.4s ease-out forwards; }
       .scale-in { animation: scaleIn 0.4s ease-out forwards; }
@@ -272,13 +267,8 @@ const MultiLabDashboard = () => {
       .soft-shadow { box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08), -4px -4px 8px rgba(255, 255, 255, 0.8); }
       .soft-shadow-inset { box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 0.8); }
       .neumorphic-active { box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.8); }
-      .royal-blue-bg { background-color: #1a237e; }
-      .royal-blue-text { color: #1a237e; }
-      .royal-blue-border { border-color: #1a237e; }
-      .royal-blue-hover:hover { background-color: #1a237e; color: white; }
       .skeleton-wave { position: relative; overflow: hidden; }
       .skeleton-wave::after { position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%); background: linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0.2) 20%,rgba(255,255,255,0.5) 60%,rgba(255,255,255,0)); animation: shimmer 2s infinite; content: ''; }
-      @keyframes shimmer { 100% { transform: translateX(100%); } }
     `}</style>
   );
 
@@ -286,11 +276,11 @@ const MultiLabDashboard = () => {
   const visibleMenuItems = getVisibleMenuItems();
 
   return (
-    <div className="min-h-screen font-sans bg-gray-50">
+    <div className="min-h-screen font-sans bg-gradient-to-br from-blue-50 to-blue-100">
       <AnimatedBackground />
       
       {/* Navigation Bar */}
-      <header className="w-full bg-white/90 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200/50 slide-down">
+      <header className="w-full bg-white/90 backdrop-blur-lg sticky top-0 z-50 border-b border-blue-200/50 slide-down">
         <div className="w-full px-2 sm:px-4 lg:px-6 xl:px-8">
           {/* First line - Logo, Title, User, Logout */}
           <div className="flex items-center justify-between py-3 sm:py-4">

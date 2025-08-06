@@ -56,7 +56,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100">
           <OfflineIndicator />
           <Routes>
             {/* Public Routes */}

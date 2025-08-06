@@ -544,9 +544,33 @@ const CreateRequestForm = () => {
       ...newExperiments[index],
       experimentId: experiment.experimentId,
       experimentName: experiment.experimentName,
+      courseId: experiment.courseId || '', // Auto-fill course from experiment
+      courseName: experiment.courseName || '', // Store course name for display
+      courseCode: experiment.courseCode || '', // Store course code for display
+      subjectId: experiment.subjectId || '',
+      subjectName: experiment.subjectName || '',
       chemicals: processedChemicals,
       glassware: processedGlassware,
       equipment: processedEquipment,
+    };
+    setExperiments(newExperiments);
+  };
+
+  // Handle resetting experiment selection
+  const handleResetExperiment = (index) => {
+    const newExperiments = [...experiments];
+    newExperiments[index] = {
+      ...newExperiments[index],
+      experimentId: '',
+      experimentName: '',
+      courseId: '', // Clear auto-filled course
+      courseName: '', // Clear course name
+      courseCode: '', // Clear course code
+      subjectId: '',
+      subjectName: '',
+      chemicals: [], // Clear chemicals
+      glassware: [], // Clear glassware
+      equipment: [], // Clear equipment
     };
     setExperiments(newExperiments);
   };
@@ -717,6 +741,14 @@ const CreateRequestForm = () => {
       availableQuantity: null,
     });
     setExperiments(newExperiments);
+  };
+
+  const removeChemical = (expIndex, chemIndex) => {
+    const newExperiments = [...experiments];
+    if (newExperiments[expIndex].chemicals.length > 1) {
+      newExperiments[expIndex].chemicals.splice(chemIndex, 1);
+      setExperiments(newExperiments);
+    }
   };
 
   const addGlassware = (expIndex) => {
@@ -939,69 +971,93 @@ const CreateRequestForm = () => {
     const chemical = experiments[expIndex].chemicals[chemIndex];
     
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div className="relative">
-          <label className={`block text-sm font-medium ${THEME.secondaryText} mb-1`}>Chemical Name</label>
-          <input
-            type="text"
-            placeholder="Search chemical"
-            value={chemical.chemicalName}
-            onChange={(e) => handleChemicalSearch(expIndex, chemIndex, e.target.value)}
-            onFocus={() => handleFocus(expIndex, chemIndex)}
-            onBlur={() => handleBlur(expIndex, chemIndex)}
-            required
-            className={`w-full px-3 py-2 text-sm md:text-base border ${THEME.border} rounded-lg ${THEME.inputFocus} transition-colors`}
-          />
-          {chemical.showSuggestions && chemical.suggestions.length > 0 && (
-            <ul className="absolute z-10 mt-1 w-full border border-[#E8D8E1] rounded-lg bg-white shadow-lg max-h-60 overflow-auto">
-              {chemical.suggestions.map((sug, idx) => (
-                <li
-                  key={`suggestion-${expIndex}-${chemIndex}-${idx}`}
-                  className="px-3 py-2 text-sm hover:bg-[#F9F3F7] cursor-pointer border-b border-[#E8D8E1] last:border-b-0"
-                  onClick={() => handleChemicalSelect(expIndex, chemIndex, sug)}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{sug.name}</span>
-                    <span className="text-xs bg-[#F0E6EC] text-[#6D123F] px-2 py-1 rounded">
-                      Available: {sug.availableQuantity} {sug.unit}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div>
-          <label className={`block text-sm font-medium ${THEME.secondaryText} mb-1`}>Quantity</label>
-          <input
-            type="number"
-            placeholder="Enter quantity"
-            value={chemical.quantity}
-            onChange={(e) => handleChemicalChange(expIndex, chemIndex, 'quantity', e.target.value)}
-            required
-            className={`w-full px-3 py-2 text-sm md:text-base border ${THEME.border} rounded-lg ${THEME.inputFocus} transition-colors`}
-            max={chemical.availableQuantity || undefined}
-          />
-          {chemical.availableQuantity !== null && (
-            <div className="flex items-center mt-1 text-xs text-gray-500">
-              <span>Available: {chemical.availableQuantity} {chemical.unit}</span>
-              {chemical.quantity > chemical.availableQuantity && (
-                <span className="ml-2 text-red-500 font-medium">
-                  (Exceeds available quantity)
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-        <div>
-          <label className={`block text-sm font-medium ${THEME.secondaryText} mb-1`}>Unit</label>
-          <input
-            type="text"
-            placeholder="Unit"
-            value={chemical.unit}
-            readOnly
-            className="w-full px-3 py-2 text-sm md:text-base border border-[#E8D8E1] rounded-lg bg-gray-100"
-          />
+      <div className="relative group bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+        <div className="grid grid-cols-12 gap-4 items-center">
+          {/* Chemical Name */}
+          <div className="col-span-5 relative">
+            <label className="block text-xs font-medium text-gray-600 mb-1">Chemical Name</label>
+            <input
+              type="text"
+              placeholder="Search chemical..."
+              value={chemical.chemicalName}
+              onChange={(e) => handleChemicalSearch(expIndex, chemIndex, e.target.value)}
+              onFocus={() => handleFocus(expIndex, chemIndex)}
+              onBlur={() => handleBlur(expIndex, chemIndex)}
+              required
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
+            {chemical.showSuggestions && chemical.suggestions.length > 0 && (
+              <ul className="absolute z-20 mt-1 w-full border border-gray-300 rounded-lg bg-white shadow-lg max-h-60 overflow-auto">
+                {chemical.suggestions.map((sug, idx) => (
+                  <li
+                    key={`suggestion-${expIndex}-${chemIndex}-${idx}`}
+                    className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                    onClick={() => handleChemicalSelect(expIndex, chemIndex, sug)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{sug.name}</span>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                        Available: {sug.availableQuantity} {sug.unit}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Quantity */}
+          <div className="col-span-3">
+            <label className="block text-xs font-medium text-gray-600 mb-1">Quantity</label>
+            <input
+              type="number"
+              placeholder="0"
+              value={chemical.quantity}
+              onChange={(e) => handleChemicalChange(expIndex, chemIndex, 'quantity', e.target.value)}
+              required
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              max={chemical.availableQuantity || undefined}
+              min="0"
+              step="0.01"
+            />
+            {chemical.availableQuantity !== null && (
+              <div className="flex items-center mt-1 text-xs">
+                <span className="text-gray-500">Available: {chemical.availableQuantity} {chemical.unit}</span>
+                {chemical.quantity > chemical.availableQuantity && (
+                  <span className="ml-2 text-red-500 font-medium">
+                    (Exceeds limit)
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Unit */}
+          <div className="col-span-3">
+            <label className="block text-xs font-medium text-gray-600 mb-1">Unit</label>
+            <input
+              type="text"
+              placeholder="g, ml, etc."
+              value={chemical.unit}
+              readOnly
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+            />
+          </div>
+
+          {/* Delete Button */}
+          <div className="col-span-1 flex justify-center">
+            <button
+              type="button"
+              onClick={() => removeChemical(expIndex, chemIndex)}
+              className="w-8 h-8 flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 group-hover:opacity-100 opacity-60"
+              title="Remove chemical"
+              disabled={experiments[expIndex].chemicals.length <= 1}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -1352,8 +1408,19 @@ const CreateRequestForm = () => {
                 {experiment.experimentId && (
                   <div className="mb-6 transition-all duration-500">
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2 text-blue-700 font-semibold text-lg">
-                        <span className="bg-blue-100 px-3 py-1 rounded-xl shadow-inner">{experiment.experimentName}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-blue-700 font-semibold text-lg">
+                          <span className="bg-blue-100 px-3 py-1 rounded-xl shadow-inner">{experiment.experimentName}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleResetExperiment(expIndex)}
+                          className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 flex items-center gap-1"
+                          title="Reset experiment selection"
+                        >
+                          <span>×</span>
+                          Reset
+                        </button>
                       </div>
                       {(experiment.courseId || experiment.batchId) && (
                         <div className="text-sm text-gray-600 ml-1">
@@ -1388,56 +1455,86 @@ const CreateRequestForm = () => {
                   </div>
                   <div>
                     <label className={CLOUDY_LABEL}>Course</label>
-                    <select
-                      value={experiment.courseId}
-                      onChange={(e) => handleCourseChange(expIndex, e.target.value)}
-                      required
-                      className={`${CLOUDY_INPUT} w-full px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400`}
-                      aria-label="Course"
-                    >
-                      <option value="">Select Course</option>
-                      {coursesData.map((course) => (
-                        <option key={course._id} value={course._id}>
-                          {course.courseName} ({course.courseCode})
-                        </option>
-                      ))}
-                    </select>
+                    {experiment.experimentId ? (
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={`${experiment.courseName} (${experiment.courseCode})`}
+                          readOnly
+                          className={`${CLOUDY_INPUT} w-full px-3 py-2 text-base bg-green-50 border-green-300 text-green-800 cursor-not-allowed`}
+                          aria-label="Course (Auto-filled from experiment)"
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                          <span className="text-green-600 text-xs">✓ Auto-filled</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <select
+                        value={experiment.courseId}
+                        onChange={(e) => handleCourseChange(expIndex, e.target.value)}
+                        required
+                        className={`${CLOUDY_INPUT} w-full px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                        aria-label="Course"
+                      >
+                        <option value="">Select Course</option>
+                        {coursesData.map((course) => (
+                          <option key={course._id} value={course._id}>
+                            {course.courseName} ({course.courseCode})
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                   <div>
                     <label className={CLOUDY_LABEL}>Batch</label>
                     <select
-                      value={experiment.batchId}
+                      value={experiment.batchId || ''}
                       onChange={(e) => handleExperimentChange(expIndex, 'batchId', e.target.value)}
                       required
-                      disabled={!experiment.courseId}
-                      className={`${CLOUDY_INPUT} w-full px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400 ${!experiment.courseId ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                      disabled={!experiment.courseId || experiment.courseId === ''}
+                      className={`${CLOUDY_INPUT} w-full px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400 ${(!experiment.courseId || experiment.courseId === '') ? 'bg-gray-100 cursor-not-allowed' : 'focus:border-blue-500 bg-white'}`}
                       aria-label="Batch"
                     >
-                      <option value="">Select Batch</option>
-                      {getBatchesForCourse(experiment.courseId).map((batch) => (
+                      <option value="">
+                        {(!experiment.courseId || experiment.courseId === '') ? 'Select Course First' : 'Select Batch'}
+                      </option>
+                      {experiment.courseId && experiment.courseId !== '' && getBatchesForCourse(experiment.courseId).map((batch) => (
                         <option key={batch._id} value={batch._id}>
                           {batch.batchName} ({batch.batchCode}) - {batch.academicYear}
                         </option>
                       ))}
                     </select>
+                    {experiment.experimentId && experiment.courseId && experiment.courseId !== '' && (
+                      <div className="mt-1 text-xs text-green-600">
+                        <span>✓</span> Course auto-filled - Please select appropriate batch
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Chemicals Section */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <ChemicalIcon />
-                      <h4 className="text-md font-semibold text-blue-800">Chemicals</h4>
+                      <h4 className="text-lg font-semibold text-blue-800">Required Chemicals</h4>
+                      {experiment.chemicals.length > 0 && (
+                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                          {experiment.chemicals.length} item{experiment.chemicals.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
                     </div>
                     <button
                       type="button"
                       onClick={() => addChemical(expIndex)}
-                      className={`${CLOUDY_BTN} px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
                       aria-label="Add chemical"
                       title="Add chemical"
                     >
-                      + Add Chemical
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                      Add Chemical
                     </button>
                   </div>
                   {experiment.chemicals.map((_, chemIndex) => (

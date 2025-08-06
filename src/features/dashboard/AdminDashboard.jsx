@@ -23,6 +23,7 @@ import EquipmentStockList from  '../equipment/EquipmentStockList';
 import RequestCard from '../requests/RequestCard';
 import UnifiedAllocateDialog from '../requests/UnifiedAllocateDialog';
 import CourseList from '../courses/CourseList';
+import SubjectManagement from '../admin/SubjectManagement';
 import LabManagement from '../labs/LabManagement';
 
 // SVG Icons - Converted to Component Functions for consistency with CentralLabAdminDashboard
@@ -117,6 +118,12 @@ const CourseIcon = () => (
   </svg>
 );
 
+const SubjectIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+  </svg>
+);
+
 // Parent Category Icons
 const LabOperationsIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -186,6 +193,7 @@ const NAV_CATEGORIES = {
     icon: AdministrationIcon,
     items: [
       { key: 'courses', label: 'Course & Batch Management', icon: CourseIcon, component: <CourseList /> },
+      { key: 'subjects', label: 'Subject Management', icon: SubjectIcon, component: <SubjectManagement /> },
       { key: 'labs', label: 'Lab Management', icon: LabManagementIcon, component: <LabManagement /> },
       { key: 'invoices', label: 'Invoices', icon: InvoiceIcon, component: <InvoicePage /> },
       { key: 'vendors', label: 'Vendors', icon: VendorIcon, component: <VendorList /> },

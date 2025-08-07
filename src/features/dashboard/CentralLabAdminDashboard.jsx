@@ -18,6 +18,7 @@ import InvoicePage from '../invoice/InvoicePage';
 import VendorList from '../vendor/VendorList';
 import { AllocateEquipmentToLabByScanForm } from '../equipment';
 import EquipmentStockList from '../equipment/EquipmentStockList';
+import RequirementsPage from '../requirements/RequirementsPage';
 import CourseList from '../courses/CourseList';
 
 
@@ -139,6 +140,12 @@ const AdministrationIcon = () => (
   </svg>
 );
 
+const RequirementsIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+  </svg>
+);
+
 // NotificationCenter Component
 const NotificationCenter = ({ notifications = [], onMarkAsRead }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -199,6 +206,7 @@ const NAV_CATEGORIES = {
     icon: LabOperationsIcon,
     items: [
       { key: 'all_lab_requests', label: 'All Lab Requests', icon: LabRequestIcon, component: <AllLabRequestsPage /> },
+      { key: 'requirements', label: 'Requirements', icon: RequirementsIcon, component: <RequirementsPage /> },
       { key: 'quotations', label: 'Quotations', icon: QuotationIcon, component: <QuotationPage /> },
       { key: 'indents', label: 'Indents', icon: IndentIcon, component: <IndentPage /> }
     ]

@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import CourseForm from './CourseForm';
 import CourseCard from './CourseCard';
 import CourseStats from './CourseStats';
+import CourseDetailModal from './CourseDetailModal';
+import SubjectCreationModal from './SubjectCreationModal';
 
 // Enhanced animations and styles
 const customStyles = `
@@ -147,6 +149,10 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
   const [stats, setStats] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCourseForSubject, setSelectedCourseForSubject] = useState(null);
+  const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
 
   const isAdmin = userRole === 'admin' || userRole === 'central_store_admin';
   const canManageCourses = showAdminActions && isAdmin;
@@ -198,6 +204,42 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
     
     setDepartments(depts);
     setAcademicYears(years);
+  };
+
+  // Handle course detail view
+  const handleViewCourse = (course) => {
+    setSelectedCourse(course);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCourse(null);
+  };
+
+  // Handle subject creation modal
+  const handleAddSubject = (course) => {
+    setSelectedCourseForSubject(course);
+    setIsSubjectModalOpen(true);
+  };
+
+  const closeSubjectModal = () => {
+    setIsSubjectModalOpen(false);
+    setSelectedCourseForSubject(null);
+  };
+
+  const handleSubjectsCreated = (results) => {
+    const successCount = results.filter(result => result.success).length;
+    if (successCount > 0) {
+      Swal.fire({
+        title: 'Success!',
+        text: `${successCount} subject${successCount > 1 ? 's' : ''} created successfully`,
+        icon: 'success',
+        confirmButtonColor: '#10B981'
+      });
+      // Optionally refresh courses or update UI
+      fetchCourses();
+    }
   };
 
   // Handle course creation
@@ -627,6 +669,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                               setShowForm(true);
                             }}
                             onDelete={() => handleDeleteCourse(course._id)}
+                            onViewDetails={handleViewCourse}
+                            onAddSubject={handleAddSubject}
                             canManage={canManageCourses}
                           />
                         </div>
@@ -651,8 +695,9 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                           {filteredCourses.map((course, index) => (
                             <tr 
                               key={course._id} 
-                              className="hover:bg-blue-50/50 transition-all duration-200 animate-slideInLeft"
+                              className="hover:bg-blue-50/50 transition-all duration-200 animate-slideInLeft cursor-pointer"
                               style={{ animationDelay: `${index * 0.05}s` }}
+                              onClick={() => handleViewCourse(course)}
                             >
                               <td className="px-6 py-4">
                                 <div className="flex items-center">
@@ -691,7 +736,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                                 <td className="px-6 py-4 text-right">
                                   <div className="flex justify-end gap-2">
                                     <button
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         setEditingCourse(course);
                                         setShowForm(true);
                                       }}
@@ -700,7 +746,10 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
                                       Edit
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteCourse(course._id)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteCourse(course._id);
+                                      }}
                                       className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-200 text-xs font-medium hover-lift"
                                     >
                                       Delete
@@ -769,6 +818,26 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Course Detail Modal */}
+        {isModalOpen && (
+          <CourseDetailModal
+            course={selectedCourse}
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onAddSubject={handleAddSubject}
+          />
+        )}
+
+        {/* Subject Creation Modal */}
+        {isSubjectModalOpen && (
+          <SubjectCreationModal
+            course={selectedCourseForSubject}
+            isOpen={isSubjectModalOpen}
+            onClose={closeSubjectModal}
+            onSubjectsCreated={handleSubjectsCreated}
+          />
         )}
       </div>
     </>

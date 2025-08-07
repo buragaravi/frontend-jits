@@ -115,19 +115,23 @@ const QuotationCard = ({ quotation, onViewDetails }) => {
             </div>
 
             {/* Details Section */}
-            <div className="grid grid-cols-1 gap-4 mb-4 text-sm">
+            <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                 <div>
                     <span className="text-gray-500">Created:</span>
                     <p className="font-medium text-gray-800">
                         {new Date(quotation.createdAt).toLocaleDateString()}
                     </p>
                 </div>
+                <div>
+                    <span className="text-gray-500">Lab:</span>
+                    <p className="font-medium text-gray-800">{quotation.labId || 'N/A'}</p>
+                </div>
             </div>
 
             {/* Action Button */}
             <div className="flex justify-end">
                 <button
-                    onClick={() => onViewDetails && onViewDetails(quotation)}
+                    onClick={() => onViewDetails(quotation)}
                     className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg"
                 >
                     <ViewIcon />

@@ -384,9 +384,7 @@ const EquipmentStockList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50/90 via-blue-50/80 to-indigo-100/90 relative">
-      <GlobalPrintStyles />
-      
+    <div className="w-full relative">
       {/* Floating bubbles background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
@@ -412,24 +410,9 @@ const EquipmentStockList = () => {
         }
       `}</style>
 
-      {/* Breadcrumb Navigation */}
-      <div className="relative z-10 bg-white/20 backdrop-blur-xl border-b border-white/30 px-6 py-3">
-        <div className="flex items-center text-sm text-slate-600">
-          <span className="hover:text-blue-600 cursor-pointer">Admin Dashboard</span>
-          <svg className="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="hover:text-blue-600 cursor-pointer">Equipment</span>
-          <svg className="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="text-slate-800 font-medium">Equipment Stock</span>
-        </div>
-      </div>
-      
-      <div className="relative z-10 w-full max-w-none mx-auto bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden mx-6 mt-6">
+      <div className="relative z-10 w-full max-w-none mx-auto bg-white/20 overflow-hidden">
         {/* Enhanced Header Section */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 p-6 text-white overflow-hidden">
+        <div className="relative rounded-b-3xl bg-blue-600 p-4 mb-6 text-white overflow-hidden">
           <div className="absolute inset-0 bg-blue-800/20"></div>
           <div className="relative z-10">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
@@ -440,7 +423,7 @@ const EquipmentStockList = () => {
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold mb-1">Equipment Stock Management</h1>
+                  <h1 className="text-lg lg:text-xl font-bold mb-1">Equipment Stock Management</h1>
                   <p className="text-blue-100 text-base">Monitor and manage equipment inventory across all laboratories</p>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { format } from 'date-fns';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import Swal from 'sweetalert2';
 import RequestCard from './RequestCard';
 import RequestDetailsModal from './RequestDetailsModal';
 import FulfillRequestDialog from './FulfillRequestDialog';
@@ -257,6 +258,53 @@ const AllLabRequestsPage = () => {
     fetchAllLabRequests();
     handleCloseFulfill();
     handleCloseUnifiedDialog();
+  };
+
+  // Handler for granting remaining allocation permission
+  const handleGrantPermission = async (requestId) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Grant Permission',
+        text: 'Are you sure you want to grant permission for remaining allocation?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Grant Permission',
+        cancelButtonText: 'Cancel'
+      });
+
+      if (result.isConfirmed) {
+        const token = localStorage.getItem('token');
+        await axios.put(
+          `https://backend-jits.onrender.com/api/requests/${requestId}/grant-remaining-allocation-permission`,
+          { reason: 'Admin granted permission for remaining allocation' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        Swal.fire({
+          title: 'Success!',
+          text: 'Permission granted successfully!',
+          icon: 'success',
+          confirmButtonColor: '#3085d6'
+        });
+        
+        fetchAllLabRequests(); // Refresh the list
+      }
+    } catch (err) {
+      Swal.fire({
+        title: 'Error!',
+        text: err.response?.data?.message || 'Failed to grant permission',
+        icon: 'error',
+        confirmButtonColor: '#d33'
+      });
+    }
+  };
+
+  // Handler for allocating remaining resources using UnifiedAllocateDialog
+  const handleAllocateRemaining = (request) => {
+    setSelectedRequest(request);
+    setShowUnifiedDialog(true);
   };
 
   const generatePDF = () => {
@@ -629,7 +677,7 @@ const AllLabRequestsPage = () => {
                     className="bg-white/90 backdrop-blur-sm border border-blue-100/50 hover:shadow-xl transition-all duration-300 rounded-xl p-4 cursor-pointer transform group-hover:scale-105"
                     actionButton={
                       <>
-                        {/* Only show allocate button for approved requests */}
+                        {/* Allocate button for approved requests */}
                         {req.status === 'approved' && (isCentralAdmin || isLabAdmin) && (
                           <button
                             onClick={e => {
@@ -641,8 +689,53 @@ const AllLabRequestsPage = () => {
                             Allocate Resources
                           </button>
                         )}
+                        
+                        {/* For partially_fulfilled requests - different buttons based on permission */}
+                        {req.status === 'partially_fulfilled' && userRole === 'admin' && (
+                          <>
+                            {/* Grant Permission button if permission not granted */}
+                            {!req.remainingAllocationPermission?.granted && (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleGrantPermission(req._id);
+                                }}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all duration-300 text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
+                              >
+                                Grant Permission
+                              </button>
+                            )}
+                            
+                            {/* Allocate Remaining button if permission granted */}
+                            {req.remainingAllocationPermission?.granted && (isCentralAdmin || isLabAdmin) && (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleAllocateRemaining(req);
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all duration-300 text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
+                              >
+                                Allocate Remaining
+                              </button>
+                            )}
+                          </>
+                        )}
+                        
+                        {/* Show permission status for partially_fulfilled if permission granted but not admin */}
+                        {req.status === 'partially_fulfilled' && req.remainingAllocationPermission?.granted && userRole !== 'admin' && (isCentralAdmin || isLabAdmin) && (
+                          <button
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleAllocateRemaining(req);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all duration-300 text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
+                          >
+                            Allocate Remaining
+                          </button>
+                        )}
+                        
                         {/* Disabled button for non-approved requests */}
-                        {req.status !== 'approved' && (req.status === 'pending' || req.status === 'partially_fulfilled') && (isCentralAdmin || isLabAdmin) && (
+                        {req.status !== 'approved' && !(req.status === 'partially_fulfilled' && (userRole === 'admin' || req.remainingAllocationPermission?.granted)) && (req.status === 'pending' || req.status === 'partially_fulfilled') && (isCentralAdmin || isLabAdmin) && (
                           <button
                             disabled
                             className="px-4 py-2 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed transition-all duration-300 text-sm opacity-50"

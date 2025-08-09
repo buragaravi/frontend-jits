@@ -267,9 +267,12 @@ const RequestPDF = ({ request }) => (
                   if (eq.isAllocated && Array.isArray(eq.allocationHistory) && eq.allocationHistory.length > 0) {
                     const lastAlloc = eq.allocationHistory[eq.allocationHistory.length - 1];
                     if (Array.isArray(lastAlloc.itemIds) && lastAlloc.itemIds.length > 0) {
-                      const shown = lastAlloc.itemIds.slice(0, 3);
+                      const shown = lastAlloc.itemIds.slice(0, 2);
                       allocatedItemIds = shown.join(', ');
-                      if (lastAlloc.itemIds.length > 3) allocatedItemIds += ', ...';
+                      if (lastAlloc.itemIds.length > 2) {
+                        const remaining = lastAlloc.itemIds.length - 2;
+                        allocatedItemIds += ` +${remaining} more`;
+                      }
                     }
                   }
                   return (
@@ -549,11 +552,29 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
                               </td>
                               <td className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold ${glass.isDisabled ? 'text-rose-600' : THEME.primaryText}`}>
                                 {glass.quantity} {glass.unit || glass.variant || ''}
-                                {glass.allocatedQuantity && glass.allocatedQuantity > 0 && (
-                                  <div className="text-xs text-emerald-600 font-medium mt-0.5">
-                                    ({glass.allocatedQuantity} allocated)
-                                  </div>
-                                )}
+                                {(() => {
+                                  // Calculate allocated quantity from various sources
+                                  let allocatedQty = glass.allocatedQuantity || 0;
+                                  
+                                  // If no allocatedQuantity but has allocationHistory, calculate from history
+                                  if (!allocatedQty && glass.allocationHistory && Array.isArray(glass.allocationHistory) && glass.allocationHistory.length > 0) {
+                                    allocatedQty = glass.allocationHistory.reduce((total, allocation) => total + (allocation.quantity || 0), 0);
+                                  }
+                                  
+                                  // If isAllocated is true but no quantity calculated, assume fully allocated
+                                  if (glass.isAllocated && !allocatedQty) {
+                                    allocatedQty = glass.quantity;
+                                  }
+                                  
+                                  if (allocatedQty > 0) {
+                                    return (
+                                      <div className="text-xs text-emerald-600 font-medium mt-0.5">
+                                        ({allocatedQty} allocated)
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                               </td>
                               <td className="px-3 sm:px-4 py-2">
                                 {glass.isDisabled ? (
@@ -562,9 +583,21 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
                                   </span>
                                 ) : (
                                   (() => {
-                                    const allocatedQty = glass.allocatedQuantity || 0;
+                                    // Calculate allocated quantity from various sources
+                                    let allocatedQty = glass.allocatedQuantity || 0;
+                                    
+                                    // If no allocatedQuantity but has allocationHistory, calculate from history
+                                    if (!allocatedQty && glass.allocationHistory && Array.isArray(glass.allocationHistory) && glass.allocationHistory.length > 0) {
+                                      allocatedQty = glass.allocationHistory.reduce((total, allocation) => total + (allocation.quantity || 0), 0);
+                                    }
+                                    
+                                    // If isAllocated is true but no quantity calculated, assume fully allocated
+                                    if (glass.isAllocated && !allocatedQty) {
+                                      allocatedQty = glass.quantity;
+                                    }
+                                    
                                     const totalQty = glass.quantity;
-                                    const isFullyAllocated = allocatedQty >= totalQty;
+                                    const isFullyAllocated = glass.isAllocated && allocatedQty >= totalQty;
                                     const isPartiallyAllocated = allocatedQty > 0 && allocatedQty < totalQty;
                                     
                                     if (isFullyAllocated) {
@@ -623,7 +656,10 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
                             if (Array.isArray(lastAlloc.itemIds) && lastAlloc.itemIds.length > 0) {
                               const shown = lastAlloc.itemIds.slice(0, 2);
                               allocatedItemIds = shown.join(', ');
-                              if (lastAlloc.itemIds.length > 2) allocatedItemIds += ', ...';
+                              if (lastAlloc.itemIds.length > 2) {
+                                const remaining = lastAlloc.itemIds.length - 2;
+                                allocatedItemIds += ` +${remaining} more`;
+                              }
                             }
                           }
                           return (
@@ -643,11 +679,24 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
                               </td>
                               <td className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold ${eq.isDisabled ? 'text-rose-600' : THEME.primaryText}`}>
                                 {eq.quantity}
-                                {eq.allocatedQuantity && eq.allocatedQuantity > 0 && (
-                                  <div className="text-xs text-emerald-600 font-medium mt-0.5">
-                                    ({eq.allocatedQuantity} allocated)
-                                  </div>
-                                )}
+                                {(() => {
+                                  let allocatedQuantity = eq.allocatedQuantity || 0;
+                                  
+                                  // Calculate total allocated quantity from ALL allocation history
+                                  if (eq.allocationHistory && eq.allocationHistory.length > 0) {
+                                    allocatedQuantity = eq.allocationHistory.reduce((total, allocation) => {
+                                      return total + (allocation.quantity || 0);
+                                    }, 0);
+                                  }
+                                  
+                                  const remainingQuantity = eq.quantity - allocatedQuantity;
+                                  
+                                  return allocatedQuantity > 0 ? (
+                                    <div className="text-xs text-emerald-600 font-medium mt-0.5">
+                                      ({allocatedQuantity} allocated{remainingQuantity > 0 ? `, ${remainingQuantity} remaining` : ''})
+                                    </div>
+                                  ) : null;
+                                })()}
                               </td>
                               <td className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium ${eq.isDisabled ? 'text-rose-600' : THEME.mutedText}`}>
                                 {eq.variant}
@@ -659,7 +708,14 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
                                   </span>
                                 ) : (
                                   (() => {
-                                    const allocatedQty = eq.allocatedQuantity || 0;
+                                    let allocatedQty = eq.allocatedQuantity || 0;
+                                    
+                                    // Also check allocation history for allocated quantity
+                                    if (eq.allocationHistory && eq.allocationHistory.length > 0) {
+                                      const lastAllocation = eq.allocationHistory[eq.allocationHistory.length - 1];
+                                      allocatedQty = Math.max(allocatedQty, lastAllocation.quantity || 0);
+                                    }
+                                    
                                     const totalQty = eq.quantity;
                                     const isFullyAllocated = allocatedQty >= totalQty;
                                     const isPartiallyAllocated = allocatedQty > 0 && allocatedQty < totalQty;

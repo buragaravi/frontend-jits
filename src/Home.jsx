@@ -8,7 +8,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-700 text-white p-4 fixed w-full z-50 shadow-2xl backdrop-blur-lg border-b border-white/20">
+    <header className="bg-blue-600 text-white p-4 fixed w-full z-50 shadow-2xl backdrop-blur-lg border-b border-white/20">
       <nav className="container mx-auto flex justify-between items-center">
         <motion.div 
           initial={{ x: -50, opacity: 0 }}

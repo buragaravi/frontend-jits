@@ -75,7 +75,7 @@ const customStyles = `
   }
 
   .shimmer {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, rgb(240, 240, 240) 25%, rgb(224, 224, 224) 50%, rgb(240, 240, 240) 75%);
     background-size: 1000px 100%;
     animation: shimmer 2s infinite linear;
   }
@@ -270,8 +270,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Subjects Created!',
         text: `${successCount} subject${successCount > 1 ? 's' : ''} created successfully`,
         icon: 'success',
-        confirmButtonColor: '#2563eb',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(37, 99, 235)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',
@@ -297,7 +297,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
-      background: '#ffffff',
+      background: 'rgb(255, 255, 255)',
       backdrop: 'rgba(0,0,0,0.4)',
       customClass: {
         popup: 'rounded-2xl shadow-2xl',
@@ -326,8 +326,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Course Created!',
         text: res.data.message || 'Course has been successfully created',
         confirmButtonText: 'Excellent!',
-        confirmButtonColor: '#2563eb',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(37, 99, 235)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',
@@ -346,8 +346,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Creation Failed',
         text: err.response?.data?.message || 'Failed to create course. Please try again.',
         confirmButtonText: 'Try Again',
-        confirmButtonColor: '#ef4444',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(239, 68, 68)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',
@@ -369,7 +369,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
-      background: '#ffffff',
+      background: 'rgb(255, 255, 255)',
       backdrop: 'rgba(0,0,0,0.4)',
       customClass: {
         popup: 'rounded-2xl shadow-2xl',
@@ -405,8 +405,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
           title: 'Course Updated!',
           text: res.data.message || 'Course has been successfully updated',
           confirmButtonText: 'Excellent!',
-          confirmButtonColor: '#2563eb',
-          background: '#ffffff',
+          confirmButtonColor: 'rgb(37, 99, 235)',
+          background: 'rgb(255, 255, 255)',
           backdrop: 'rgba(0,0,0,0.4)',
           customClass: {
             popup: 'rounded-2xl shadow-2xl',
@@ -432,8 +432,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Update Failed',
         text: errorMessage,
         confirmButtonText: 'Try Again',
-        confirmButtonColor: '#ef4444',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(239, 68, 68)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',
@@ -453,11 +453,11 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
       text: 'Are you sure you want to delete this course? This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
+      confirmButtonColor: 'rgb(239, 68, 68)',
+      cancelButtonColor: 'rgb(107, 114, 128)',
       confirmButtonText: 'Yes, Delete',
       cancelButtonText: 'Cancel',
-      background: '#ffffff',
+      background: 'rgb(255, 255, 255)',
       backdrop: 'rgba(0,0,0,0.4)',
       customClass: {
         popup: 'rounded-2xl shadow-2xl',
@@ -478,7 +478,7 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
-      background: '#ffffff',
+      background: 'rgb(255, 255, 255)',
       backdrop: 'rgba(0,0,0,0.4)',
       customClass: {
         popup: 'rounded-2xl shadow-2xl',
@@ -506,8 +506,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Course Deleted!',
         text: 'Course has been successfully deleted',
         confirmButtonText: 'Great!',
-        confirmButtonColor: '#2563eb',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(37, 99, 235)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',
@@ -527,8 +527,8 @@ const CourseList = ({ userRole = 'admin', showAdminActions = true }) => {
         title: 'Deletion Failed',
         text: err.response?.data?.message || 'Failed to delete course. Please try again.',
         confirmButtonText: 'Try Again',
-        confirmButtonColor: '#ef4444',
-        background: '#ffffff',
+        confirmButtonColor: 'rgb(239, 68, 68)',
+        background: 'rgb(255, 255, 255)',
         backdrop: 'rgba(0,0,0,0.4)',
         customClass: {
           popup: 'rounded-2xl shadow-2xl',

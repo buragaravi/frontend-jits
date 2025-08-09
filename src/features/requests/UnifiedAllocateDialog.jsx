@@ -233,7 +233,7 @@ const UnifiedAllocateDialog = ({ request, onClose, onSuccess }) => {
                               className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                                 scanning[`${eqKey}_${idx}`] 
                                   ? 'bg-red-100 text-red-700 hover:bg-red-200' 
-                                  : `${THEME.secondaryBg} text-white hover:bg-[#42A5F5]`
+                                  : `${THEME.secondaryBg} text-white hover:bg-blue-600`
                               }`}
                               onClick={() => setScanning(s => ({ ...s, [`${eqKey}_${idx}`]: !s[`${eqKey}_${idx}`] }))}
                             >
@@ -260,7 +260,7 @@ const UnifiedAllocateDialog = ({ request, onClose, onSuccess }) => {
                           </div>
                           {scanning[`${eqKey}_${idx}`] && (
                             <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[999999] p-2 sm:p-4">
-                              <div className="bg-white/95 backdrop-blur-md border border-[#BCE0FD]/30 shadow-xl rounded-lg p-3 sm:p-4 max-w-sm sm:max-w-md w-full mx-2 sm:mx-4 max-h-[90vh] overflow-auto">
+                              <div className="bg-white/95 backdrop-blur-md border border-blue-300/30 shadow-xl rounded-lg p-3 sm:p-4 max-w-sm sm:max-w-md w-full mx-2 sm:mx-4 max-h-[90vh] overflow-auto">
                                 <EquipmentQRScanner
                                   onScan={itemId => {
                                     // The EquipmentQRScanner already extracts the itemId string
@@ -375,7 +375,7 @@ const UnifiedAllocateDialog = ({ request, onClose, onSuccess }) => {
           <button 
             onClick={handleAllocate} 
             disabled={loading} 
-            className={`px-6 py-2 rounded-lg ${THEME.primaryBg} text-white font-medium text-sm hover:bg-[#1A365D] transition-colors ${
+            className={`px-6 py-2 rounded-lg ${THEME.primaryBg} text-white font-medium text-sm hover:bg-blue-800 transition-colors ${
               loading ? 'opacity-60 cursor-not-allowed' : ''
             }`}
           >

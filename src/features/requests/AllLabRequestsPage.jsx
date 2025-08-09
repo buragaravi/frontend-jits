@@ -49,11 +49,11 @@ const THEME = {
 };
 
 const statusCategories = [
-  { status: 'all', label: 'All Requests', color: 'bg-gray-100 text-gray-800' },
-  { status: 'pending', label: 'Pending', color: 'bg-amber-100 text-amber-800' },
-  { status: 'rejected', label: 'Rejected', color: 'bg-red-100 text-red-800' },
-  { status: 'fulfilled', label: 'Fulfilled', color: 'bg-blue-100 text-blue-800' },
-  { status: 'partially_fulfilled', label: 'Partially Fulfilled', color: 'bg-blue-100 text-blue-800' }
+  { status: 'all', label: 'All Requests', color: 'bg-gray-200 text-gray-800' },
+  { status: 'pending', label: 'Pending', color: 'bg-yellow-200 text-yellow-800' },
+  { status: 'rejected', label: 'Rejected', color: 'bg-red-200 text-red-800' },
+  { status: 'fulfilled', label: 'Fulfilled', color: 'bg-green-200 text-green-800' },
+  { status: 'partially_fulfilled', label: 'Partially Fulfilled', color: 'bg-blue-200 text-blue-800' }
 ];
 
 const AllLabRequestsPage = () => {
@@ -487,21 +487,6 @@ const AllLabRequestsPage = () => {
     <div className="w-full bg-white">
       {/* Full Width Header with Rounded Top Borders and Water Bubbles */}
       <div className="w-full rounded-b-3xl bg-blue-600 backdrop-blur-xl  relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 backdrop-blur-sm"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5"></div>
-        
-        {/* Water Bubble Background Effects */}
-        <div className="water-bubbles">
-          <div className="bubble bubble-1"></div>
-          <div className="bubble bubble-2"></div>
-          <div className="bubble bubble-3"></div>
-          <div className="bubble bubble-4"></div>
-          <div className="bubble bubble-5"></div>
-          <div className="bubble bubble-6"></div>
-          <div className="bubble bubble-7"></div>
-          <div className="bubble bubble-8"></div>
-        </div>
-        
         <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div className="flex items-center gap-4">
@@ -601,7 +586,7 @@ const AllLabRequestsPage = () => {
         ) : (
           <div className="w-full">
             {/* Instructions for Status Filtering */}
-            <div className="mb-4 bg-gradient-to-r from-blue-50/80 to-blue-50/80 backdrop-blur-sm rounded-xl p-3 border border-blue-100/50">
+            <div className="mb-4 bg-blue-50/80 backdrop-blur-sm rounded-xl p-3 border border-blue-100/50">
               <div className="flex items-center gap-2 text-sm text-blue-700">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

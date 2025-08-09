@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: 'Helvetica',
-    backgroundColor: '#FAFBFF'
+    backgroundColor: '#F8FAFC'
   },
   header: {
     fontSize: 20,
@@ -210,7 +210,7 @@ const RequestPDF = ({ request }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Experiments</Text>
         {request.experiments?.map((exp, index) => (
-          <View key={exp._id} style={{ marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#E1F1FF', paddingBottom: 8 }}>
+          <View key={exp._id} style={{ marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#DBEAFE', paddingBottom: 8 }}>
             <Text style={styles.infoValue}>Experiment {index + 1}: {exp.experimentName}</Text>
             <Text style={styles.infoLabel}>
               {exp.date.split('T')[0]} | Course: {exp.courseId?.courseName} ({exp.courseId?.courseCode}) | Batch: {exp.courseId?.batches?.find(batch => batch._id === exp.batchId)?.batchName} ({exp.courseId?.batches?.find(batch => batch._id === exp.batchId)?.batchCode}) - {exp.courseId?.batches?.find(batch => batch._id === exp.batchId)?.academicYear}
@@ -218,14 +218,14 @@ const RequestPDF = ({ request }) => (
             {/* Chemicals Table */}
             {exp.chemicals && exp.chemicals.length > 0 && (
               <View style={styles.table}>
-                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BCE0FD' }}>
+                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BFDBFE' }}>
                   <Text style={[styles.tableHeader, { flex: 2 }]}>Chemical</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Quantity</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Unit</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Status</Text>
                 </View>
                 {exp.chemicals?.map((chemical) => (
-                  <View key={chemical._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F5F9FD' }}>
+                  <View key={chemical._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' }}>
                     <Text style={[styles.tableRow, { flex: 2 }]}>{chemical.chemicalName}</Text>
                     <Text style={[styles.tableRow, { flex: 1 }]}>{chemical.quantity}</Text>
                     <Text style={[styles.tableRow, { flex: 1 }]}>{chemical.unit}</Text>
@@ -237,13 +237,13 @@ const RequestPDF = ({ request }) => (
             {/* Glassware Table */}
             {exp.glassware && exp.glassware.length > 0 && (
               <View style={[styles.table, { marginTop: 8 }]}> 
-                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BCE0FD' }}>
+                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BFDBFE' }}>
                   <Text style={[styles.tableHeader, { flex: 2 }]}>Glassware</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Quantity</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Unit</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Status</Text>
                 </View>                {exp.glassware.map((glass) => (
-                  <View key={glass._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F5F9FD' }}>
+                  <View key={glass._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' }}>
                     <Text style={[styles.tableRow, { flex: 2 }]}>{glass.name || glass.glasswareName || 'N/A'}</Text>
                     <Text style={[styles.tableRow, { flex: 1 }]}>{glass.quantity}</Text>
                     <Text style={[styles.tableRow, { flex: 1 }]}>{glass.unit || glass.variant || ''}</Text>
@@ -255,7 +255,7 @@ const RequestPDF = ({ request }) => (
             {/* Equipment Table */}
             {exp.equipment && exp.equipment.length > 0 && (
               <View style={[styles.table, { marginTop: 8 }]}> 
-                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BCE0FD' }}>
+                <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#BFDBFE' }}>
                   <Text style={[styles.tableHeader, { flex: 2 }]}>Equipment</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Quantity</Text>
                   <Text style={[styles.tableHeader, { flex: 1 }]}>Variant</Text>
@@ -273,7 +273,7 @@ const RequestPDF = ({ request }) => (
                     }
                   }
                   return (
-                    <View key={eq._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F5F9FD' }}>
+                    <View key={eq._id} style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' }}>
                       <Text style={[styles.tableRow, { flex: 2 }]}>{eq.name}</Text>
                       <Text style={[styles.tableRow, { flex: 1 }]}>{eq.quantity}</Text>
                       <Text style={[styles.tableRow, { flex: 1 }]}>{eq.variant}</Text>
@@ -600,7 +600,7 @@ const PrintableContent = React.forwardRef(({ request, userRole }, ref) => {
               {/* Equipment Table */}
               {exp.equipment && exp.equipment.length > 0 && (
                 <div className="mt-4">
-                  <div className="font-bold text-sm text-[#1E3A8A] mb-2 flex items-center">
+                  <div className="font-bold text-sm text-blue-900 mb-2 flex items-center">
                     <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mr-2"></div>
                     Equipment
                   </div>
